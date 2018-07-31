@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id="dpLTE" class="container-fluid" v-cloak>
+		<div class="row" align="center">
+			<table border="1" cellspacing="0" width = 90% height = 100%>
+				<tr height="">
+					<td colspan="8" align="center" style="text-align: center; vertical-align: middle;">
+						<h1>批注关系建立</h1>
+					</td>
+				</tr>
+				<tr height="40px">
+					<td width="80px" align="center">关系名称</td>
+					<td width="220px">
+						<input v-model="relationName" @keyup.enter="add" type="text" name="relationName" id="relationName"
+						class="form-control" placeholder="请输入批注关系名称" style="width: 220px;" />
+					</td>
+					<td colspan="2" width="500px">
+						<a class="btn btn-primary" @click="add">添加关系</a>
+						<a class="btn btn-primary" href="list.html">批注关系列表</a>
+					</td>
+					<td colspan="4"></td>
+				</tr>
+				<tr height="40px">
+					<td align="center">关系类型</td>
+					<td colspan="7">
+						<input type="radio"	v-model="relationType" value="1" style="margin-left: 10px;">强化关系
+						<image src="/dp/images/postilRelation1.png"> 
+						<input type="radio" v-model="relationType" value="2" style="margin-left: 10px;">单向关系 
+						<image src="/dp/images/postilRelation2.png">
+						<input type="radio" v-model="relationType" value="3" style="margin-left: 10px;">双向关系
+						<image src="/dp/images/postilRelation3.png">
+					</td>
+				</tr>
+				<tr height="40px">
+					<td align="center">
+						批注词1
+					</td>
+					<td width="">
+						<input v-model="searchtext1" type="text" @keyup.enter="search1" id="searchtext1"
+							class="form-control" placeholder="请输入“批注词1”关键字"
+							style="width: 220px;" />
+					</td>
+					<td colspan="2">
+						<a class="btn btn-primary" @click="search1" id="search1">
+							<i class="fa fa-search"></i>&nbsp;&nbsp;查询
+						</a>
+					</td>
+					<td width="80px" align="center">
+						批注词2
+					</td>
+					<td width="220px">
+						<input v-model="searchtext2" @keyup.enter="search2" type="text"
+							class="form-control" placeholder="请输入“批注词2”关键字"
+							style="width: 220px;" />
+					</td>
+					<td colspan="2">
+						<a class="btn btn-primary" @click="search2">
+							<i class="fa fa-search"></i>&nbsp;&nbsp;查询
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4" width= 50%>
+						<table id="dataGrid1" style="table-layout: fixed;word-break:break-all; word-wrap:break-all;"></table>
+					</td>
+					<td colspan="4" width= 45%>
+						<table id="dataGrid2" style="table-layout: fixed;word-break:break-all; word-wrap:break-all;"></table>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="hiddenArea" id="hiddenArea">
+  	<input type="hidden" class="currentUserId" v-model="userId" />
+  	<input type="hidden" class="currentUserId" v-model="userName" />
+  	<input type="hidden" class="currentUserId" v-model="groupId" />
+  	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/postil_relation/create.js}"></script>
+</body>
+</html>

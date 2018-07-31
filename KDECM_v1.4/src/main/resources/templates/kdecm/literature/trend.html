@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id="publishYear" style="width: 100%;height: 50%;"></div>
+	<div id="linkFrequency" style="width: 100%;height: 50%;"></div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/libs/jquery.min.js}"></script>
+	<script th:src="@{/libs/vue.min.js}"></script>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/graph/echarts.js}"></script>
+    <script th:src="@{/js/kdecm/graph/trend.js}"></script>
+    <script th:src="@{/js/kdecm/graph/html2canvas.js}"></script>
+</body>
+</html>

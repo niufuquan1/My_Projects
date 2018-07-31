@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id="dpLTE" class="container-fluid" v-cloak>
+		<div id="upLoadFile" >	
+			<form id="uploadForm" name="uploadForm" enctype="multipart/form-data">
+			文献文件选择<input id="Literaturefile" type="file" name="Literaturefile" accept=".doc"  /> <br>
+    		请输入文献名称：<input type="text" id="literatureName" name="literatureName"> <br>
+    		请输入文献年份：<input type="text" id="literatureAge" placeholder="例如：1999" name="literatureAge"> <br>
+    		请输入文献作者：<input type="text" id="literatureAuthor" placeholder="请输入第一作者" name="literatureAuthor"> <br>
+    		请输入文献参考文献：<input type="text" id="literatureReference" placeholder="不同参考请用书名号隔开" name="literatureReference"> <br>
+    		请输入文献关键词：<input type="text" id="literatureKeyword" placeholder="不同关键词请用顿号隔开" name="literatureKeyword"> 
+			</form> 
+			<button id="upload">上传文献</button>   
+		</div>
+</div>
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/literature/add1.js}"></script>	
+</body>
+</html>

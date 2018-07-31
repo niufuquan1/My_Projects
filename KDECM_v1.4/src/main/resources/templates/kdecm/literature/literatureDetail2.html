@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	
+<link th:href="@{/css/facebook.css}" id="artDialogSkin"  rel="stylesheet"/>
+<link th:href="@{/css/postil/bootstrap.min.css}" rel="stylesheet"/>
+<link th:href="@{/css/postil/bootstrap-switch.min.css}" rel="stylesheet"/>
+</head>
+<body>
+  
+<!-- <div id="iconDeleteLine" style="display: none; position: absolute;" title="删除线"><img src="/images/delete_line.png" class="tipsIconDeleteLine"></div> -->
+  <div class="content1">
+  	  <div class="firstTitle" style="font-family:宋体;font-size:12.0000pt;"></div>
+  	  <div class="secondTitle" style="font-family:宋体;font-size:12.0000pt;"></div>
+	  <div class="content" id="content" style="font-family:宋体;font-size:12.0000pt;"><div id="literature" style="margin: 10px 150px;"></div></div>
+	  <div hidden="hidden">
+	    <div id="literatures"></div>
+	  </div>
+	  <div hidden="hidden">
+	    <div id="postils"></div>
+	  </div>
+	  <div style="font-size: 12pt;">
+	  	<span>上一章：&nbsp</span>
+	  	<a id="linkPreCpt"></a>
+	  	<br>
+	  	<span>下一章：&nbsp</span>
+	  	<a id="linkNextCpt"></a>
+	  	<button type="button" onclick="window.history.back()" class="btn btn-success" style="float:right;margin-right: 200px;margin-top: -15px;">返回</button>
+	  	<button type="button" onclick="exportbtn()" class="btn btn-success" style="float:right;margin-right: 5px;margin-top: -15px;">导出文献</button>
+	  	<!-- <button type="button" name="Submit" value="返回" onclick="window.history.back()" /> -->
+	  </div>
+  </div>
+  <div id="icon" style="display: none; position: absolute; z-index: 4;" title="添加批注">
+  	<img th:src="@{/images/postil/tips.png}" class="tipsIcon">
+  </div>
+  <div id="icon1" style="display: none; position: absolute; z-index: 4;" title="删除线">
+  	<img th:src="@{/images/postil/deleteline.png}" class="tipsIcon1">
+  </div>
+  <div id="icon2" style="display: none; position: absolute; z-index: 4;" title="下划线">
+  	<img th:src="@{/images/postil/underline.png}" class="tipsIcon2">
+  </div>
+  <div id="icon3" style="display: none; position: absolute; z-index: 4;" title="高亮">
+  	<img th:src="@{/images/postil/highlight.png}" class="tipsIcon3">
+  </div>
+<!-- 	</div> -->
+  <!-- <a class="btn btn-primary" href="listforgroup.html"><i class="fa fa-search"></i>&nbsp;查询</a> -->
+  <div class="list" style="overflow-y:auto; overflow-x:auto;"></div>
+  <div class="hiddenArea" id="hiddenArea">
+  	<input type="hidden" class="currentUserId" v-model="userId" />
+  </div>
+  <div th:include="include/footer_js::footer"></div>
+	
+  <script th:src="@{/js/kdecm/postil/artDialog.min.js}"></script>
+  <!-- <script th:src="@{/js/kdecm/postil/jquery.min.js}"></script> -->
+  <!-- <script th:src="@{/js/kdecm/postil/jquery-1.6.4.min.js}"></script> -->
+  
+  <script th:src="@{/libs/FileSaver.js}"></script>
+  <script th:src="@{/libs/jquery.wordexport.js}"></script>
+  
+  <script th:src="@{/js/kdecm/postil/bootstrap.min.js}" type="text/javascript"></script>
+  <script th:src="@{/js/kdecm/postil/bootstrap-switch.js}" type="text/javascript"></script>
+  
+  <script th:src="@{/js/common.js}"></script>
+  <script th:src="@{/libs/vue.min.js}"></script>
+  <script th:src="@{/js/kdecm/literature/literatureDetail2.js}"></script>
+  
+  <script type="text/javascript" th:src="@{/js/rangy-master/external/log4javascript.js}"></script>
+  <script type="text/javascript" th:src="@{/js/rangy-master/src/core/core.js}"></script>
+  <script type="text/javascript" th:src="@{/js/rangy-master/src/core/dom.js}"></script>
+  <script type="text/javascript" th:src="@{/js/rangy-master/src/core/domrange.js}"></script>
+  <script type="text/javascript" th:src="@{/js/rangy-master/src/core/wrappedrange.js}"></script>
+  <script type="text/javascript" th:src="@{/js/rangy-master/src/core/wrappedselection.js}"></script>
+  <script type="text/javascript" th:src="@{/js/rangy-master/src/modules/inactive/rangy-position.js}"></script>
+  <script type="text/javascript">
+	function gEBI(id) {
+		return document.getElementById(id);
+	}
+
+	function rectToString(rect) {
+		return "(" + rect.left + ", " + rect.top + "), (" + rect.right + ", " + rect.bottom + ")";
+	}
+
+	var wholeSelRectEl, startSelEl, endSelEl;
+
+	function removeSelectionIndicators() {
+		if(wholeSelRectEl) {
+			wholeSelRectEl.parentNode.removeChild(wholeSelRectEl);
+			startSelEl.parentNode.removeChild(startSelEl);
+			endSelEl.parentNode.removeChild(endSelEl);
+			startSelEl = endSelEl = wholeSelRectEl = null;
+		}
+	}
+
+
+
+	function getStartPos(){
+		var wholeSelRect = rangy.getSelection().getBoundingDocumentRect();
+		//removeSelectionIndicators();
+		if(!wholeSelRect) {
+			return;
+		}
+		startSelEl = document.createElement("div");
+		startSelEl.id = "startSelection";
+		//startSelEl.innerHTML = "&lt;&lt;";
+		var startPos = rangy.getSelection().getStartDocumentPos();
+		startSelEl.style.left = startPos.x + "px";
+		startSelEl.style.top = startPos.y + "px";
+		//document.body.appendChild(startSelEl);
+		return startPos;
+	}
+	function getEndPos(){
+		var wholeSelRect = rangy.getSelection().getBoundingDocumentRect();
+		//removeSelectionIndicators();
+		if(!wholeSelRect) {
+			return;
+		}
+		endSelEl = document.createElement("div");
+		endSelEl.id = "endSelection";
+		//endSelEl.innerHTML = "&gt;&gt;";
+		var endPos = rangy.getSelection().getEndDocumentPos();
+		//document.body.appendChild(endSelEl);
+		/*endSelEl.style.left = (endPos.x - endSelEl.offsetWidth) + "px";
+		endSelEl.style.top = (endPos.y - endSelEl.offsetHeight) + "px";*/
+		endSelEl.style.left = (endPos.x) + "px";
+		endSelEl.style.top = (endPos.y) + "px";
+		return endPos;
+	}
+
+	function createPostilObjectList(id, startPosX, startPosY, endPosX, endPosY) {
+
+		var topDistant = endPosY - startPosY;
+		var csslineHeight = $(".content").css('line-height').split("px");
+		var lineHeigth = parseFloat(csslineHeight);
+
+		var divWidth = $("#content").width();
+		var divLeft = $("#content").offset().left;
+		var divTop = $("#content").offset().left;
+		
+
+		for(var i = 0; topDistant >= (15 + lineHeigth * i ); i++) {
+			
+			if(i == 0) {
+				if(topDistant <= 19) {
+					wholeSelRectEl = document.createElement("div");
+
+					wholeSelRectEl.className = "postilObjectList "+id;
+
+					var info = document.createElement("input");
+					info.type = "hidden";
+					info.className = "info";
+					info.id="";
+					var infomation = wholeSelRectEl.appendChild(info);
+					
+					var pos = document.createElement("input");
+					pos.type = "hidden";
+					pos.className = "postion";
+					var position = wholeSelRectEl.appendChild(pos);
+
+					var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+					wholeSelRectInnerEl.id = "wholeSelectionInner";
+
+					rangy.util.extend(wholeSelRectEl.style, {
+						left: startPosX + "px",
+						top: startPosY + "px"
+					});
+					
+					rangy.util.extend(wholeSelRectInnerEl.style, {
+						width: (endPosX-startPosX) + "px",
+						height: 18  + "px"
+					});
+					document.body.appendChild(wholeSelRectEl);
+				} else {
+					wholeSelRectEl = document.createElement("div");
+
+					wholeSelRectEl.className = "postilObjectList "+id;
+
+					var info = document.createElement("input");
+					info.type = "hidden";
+					info.className = "info";
+					info.id="";
+					var infomation = wholeSelRectEl.appendChild(info);
+					
+					var pos = document.createElement("input");
+					pos.type = "hidden";
+					pos.className = "postion";
+					var position = wholeSelRectEl.appendChild(pos);
+
+					var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+					wholeSelRectInnerEl.id = "wholeSelectionInner";
+					
+					
+					
+					rangy.util.extend(wholeSelRectEl.style, {
+						left: startPosX + "px",
+						top: startPosY + "px"
+					});
+					rangy.util.extend(wholeSelRectInnerEl.style, {
+						width: (divLeft + divWidth - startPosX) + "px",
+						height: 18 + "px"
+					});
+					document.body.appendChild(wholeSelRectEl);
+				}
+			} else {
+				//alert("3");
+				var levels = Math.floor(topDistant / lineHeigth);
+				
+				for(var i = 1; i < levels; i++) {
+					//alert("进入for");
+					var wholeSelRectEl = document.createElement("div");
+					//wholeSelRectEl.id = id;
+					wholeSelRectEl.className = "postilObjectList "+id;
+
+					var info = document.createElement("input");
+					info.type = "hidden";
+					info.className = "info";
+					info.id="";
+					var infomation = wholeSelRectEl.appendChild(info);
+					
+					var pos = document.createElement("input");
+					pos.type = "hidden";
+					pos.className = "postion";
+					var position = wholeSelRectEl.appendChild(pos);
+
+					var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+					wholeSelRectInnerEl.id = "wholeSelectionInner";
+					
+					startPosY = parseFloat(startPosY);
+					var tempTop = startPosY + lineHeigth * i;
+					//tempTop = parseFloat(tempTop)
+					//alert("tempTop2="+tempTop);
+					rangy.util.extend(wholeSelRectEl.style, {
+						left: divLeft + "px",
+						top: tempTop + "px"
+					});
+
+					rangy.util.extend(wholeSelRectInnerEl.style, {
+						width: (divLeft + divWidth - 4) + "px",
+						/*字体大小px + 2 px*/
+						height: 18 + "px"
+					});
+					document.body.appendChild(wholeSelRectEl);
+				}
+				wholeSelRectEl = document.createElement("div");
+				//wholeSelRectEl.id = id;
+				wholeSelRectEl.className = "postilObjectList "+id;
+
+				var info = document.createElement("input");
+				info.type = "hidden";
+				info.className = "info";
+				info.id="";
+				var infomation = wholeSelRectEl.appendChild(info);
+				
+				var pos = document.createElement("input");
+				pos.type = "hidden";
+				pos.className = "postion";
+				var position = wholeSelRectEl.appendChild(pos);
+
+				var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+				wholeSelRectInnerEl.id = "wholeSelectionInner";
+				
+				startPosY = parseFloat(startPosY);
+				//alert("tempTop1="+(startPosY + lineHeigth * levels));
+				var tempTop = startPosY + lineHeigth * levels -1;
+				//alert("tempTop2="+tempTop);
+				rangy.util.extend(wholeSelRectEl.style, {
+					left: divLeft + "px",
+					top: tempTop + "px"
+				});
+					
+				rangy.util.extend(wholeSelRectInnerEl.style, {
+					width: (endPosX-divLeft) + "px",
+					height: "18px"
+				});
+				document.body.appendChild(wholeSelRectEl);
+			}
+		}
+	}
+	function createStyleList(id, startPosX, startPosY, endPosX, endPosY, type) {
+
+		var topDistant = endPosY - startPosY;
+		var csslineHeight = $(".content").css('line-height').split("px");
+		var lineHeigth = parseFloat(csslineHeight);
+
+		var divWidth = $("#content").width();
+		var divLeft = $("#content").offset().left;
+		var divTop = $("#content").offset().left;
+		var style;
+		switch(type)
+		{
+		case 1:
+ 		 style = "strikeline";
+ 		 break;		
+		case 2:
+		  style = "underline";
+		  break;
+		case 3:
+		  style = "highlight";
+		  break;  
+		default:
+  		style = "underline";
+		}
+		for(var i = 0; topDistant >= (15 + lineHeigth * i ); i++) {
+			
+			if(i == 0) {
+				if(topDistant <= 19) {
+
+					wholeSelRectEl = document.createElement("div");
+
+					wholeSelRectEl.className = style+" " +id;
+
+					var info = document.createElement("input");
+					info.type = "hidden";
+					var infomation = wholeSelRectEl.appendChild(info);
+					
+					var pos = document.createElement("input");
+					pos.type = "hidden";
+					pos.className = "postion"
+					var position = wholeSelRectEl.appendChild(pos);
+
+					var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+					wholeSelRectInnerEl.id = "wholeSelectionInner";
+
+
+					rangy.util.extend(wholeSelRectEl.style, {
+						left: startPosX + "px",
+						top: startPosY + "px"
+					});
+					
+					rangy.util.extend(wholeSelRectInnerEl.style, {
+						width: (endPosX-startPosX) + "px",
+						height: 18  + "px"
+					});
+					document.body.appendChild(wholeSelRectEl);
+				} else {
+
+					wholeSelRectEl = document.createElement("div");
+
+					wholeSelRectEl.className = style+" " +id;
+
+					var info = document.createElement("input");
+					info.type = "hidden";
+					var infomation = wholeSelRectEl.appendChild(info);
+					
+					var pos = document.createElement("input");
+					pos.type = "hidden";
+					pos.className = "postion"
+					var position = wholeSelRectEl.appendChild(pos);
+
+					var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+					wholeSelRectInnerEl.id = "wholeSelectionInner";
+					//wholeSelRectInnerEl.className = "wholeSelectionInner";
+					
+					rangy.util.extend(wholeSelRectEl.style, {
+						left: startPosX + "px",
+						top: startPosY + "px"
+					});
+					rangy.util.extend(wholeSelRectInnerEl.style, {
+						width: (divLeft + divWidth - startPosX) + "px",
+						height: 18 + "px"
+					});
+					document.body.appendChild(wholeSelRectEl);
+				}
+			} else {
+				//alert("3");
+				var levels = Math.floor(topDistant / lineHeigth);
+				
+				for(var i = 1; i < levels; i++) {
+					//alert("进入for");
+					var wholeSelRectEl = document.createElement("div");
+					//wholeSelRectEl.id = id;
+					wholeSelRectEl.className = style+" " +id;
+
+					var info = document.createElement("input");
+					info.type = "hidden";
+					var infomation = wholeSelRectEl.appendChild(info);
+
+					var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+					wholeSelRectInnerEl.id = "wholeSelectionInner";
+					//wholeSelRectInnerEl.className = "wholeSelectionInner";
+					
+					startPosY = parseFloat(startPosY);
+					var tempTop = startPosY + lineHeigth * i;
+					//tempTop = parseFloat(tempTop)
+					//alert("tempTop2="+tempTop);
+					rangy.util.extend(wholeSelRectEl.style, {
+						left: divLeft + "px",
+						top: tempTop + "px"
+					});
+
+					rangy.util.extend(wholeSelRectInnerEl.style, {
+						width: (divLeft + divWidth - 4) + "px",
+						/*字体大小px + 2 px*/
+						height: 18 + "px"
+					});
+					document.body.appendChild(wholeSelRectEl);
+				}
+				wholeSelRectEl = document.createElement("div");
+				//wholeSelRectEl.id = id;
+				wholeSelRectEl.className = style+" " +id;
+
+				var info = document.createElement("input");
+				info.type = "hidden";
+				var infomation = wholeSelRectEl.appendChild(info);
+
+				var wholeSelRectInnerEl = wholeSelRectEl.appendChild(document.createElement("div"));
+				wholeSelRectInnerEl.id = "wholeSelectionInner";
+				//wholeSelRectInnerEl.className = "wholeSelectionInner";
+				
+				startPosY = parseFloat(startPosY);
+				//alert("tempTop1="+(startPosY + lineHeigth * levels));
+				var tempTop = startPosY + lineHeigth * levels -1;
+				//alert("tempTop2="+tempTop);
+				rangy.util.extend(wholeSelRectEl.style, {
+					left: divLeft + "px",
+					top: tempTop + "px"
+				});
+					
+				rangy.util.extend(wholeSelRectInnerEl.style, {
+					width: (endPosX-divLeft) + "px",
+					height: "18px"
+				});
+				document.body.appendChild(wholeSelRectEl);
+			}
+		}
+	}	
+	function createButton(parentNode, clickHandler, value) {
+		var button = document.createElement("input");
+		button.type = "button";
+		button.unselectable = true;
+		button.className = "unselectable";
+		button.ontouchstart = button.onmousedown = function() {
+			clickHandler();
+			return false;
+		};
+		button.value = value;
+		parentNode.appendChild(button);
+		button = null;
+	}
+
+	window.onload = function() {
+		rangy.init();
+
+		// Enable multiple selections in IE
+		try {
+			document.execCommand("MultipleSelection", true, true);
+		} catch(ex) {}
+
+		// Create selection buttons
+		/*var selectionButtonsContainer = gEBI("selectionButtons");
+		createButton(selectionButtonsContainer, showSelectionPosition, "Show selection position");*/
+
+		// Create Range buttons
+		var rangeButtonsContainer = gEBI("rangeButtons");
+
+		// Display the control range element in IE
+		if(rangy.features.implementsControlRange) {
+			gEBI("controlRange").style.display = "block";
+		}
+	};
+</script>  
+  <script type="text/javascript">
+	var vm = new Vue({
+		el:'#hiddenArea',
+		data: {
+			userId : top.vm.user.userId
+		}
+	})
+  </script>
+
+  <script th:src="@{/js/kdecm/postil/postil2.js}"></script>
+  <script th:src="@{/js/kdecm/postil/postilLoad2.js}"></script>
+
+</body>
+<style type="text/css">
+	.table tbody tr td {
+		border: 0px !important;
+	}
+
+	.table thead tr th {
+		border: 0px !important;
+	}
+
+	.td_class1 {
+		font-size: 6px;
+		color: #787878;
+		height: 40px;
+	}
+
+	.td_class2 {
+		height: 40px;
+		/* text-align: center; */
+	}
+
+	.td_class3 {
+		/* display: none; */
+		text-indent:-9999px;
+	}
+
+	.table-hover>tbody>tr:hover {
+		background-color: transparent !important;
+	}
+
+	.fixed-table-container {
+		border: 0px !important;
+	}
+
+
+/*删除线图标*/
+.tipsIcon1 {
+	opacity: 0.80;
+	z-index: 1;
+	filter:alpha(opacity=80);
+}
+/*下滑线图标*/
+.tipsIcon2 {
+	opacity: 0.80;
+	z-index: 1;
+	filter:alpha(opacity=80);
+}
+/*高亮图标*/
+.tipsIcon3 {
+	opacity: 0.80;
+	z-index: 1;
+	filter:alpha(opacity=80);
+}
+</style>
+<style>
+	/*2018/5/29 9:27 肖凌云 修改批注框CSS样式  */
+			
+	.currentTime {
+		color: #AAAAAA;
+		float: right;
+		white-space: pre;
+		margin-bottom: 5px;
+	}
+			
+	.removeWin {
+		float: right;
+		white-space: pre;
+		color: red;
+		/*background: blue;*/
+	}
+	/*2018/5/29 15:39肖凌云 滑动按钮CSS样式  */
+			
+	.bootstrap-switch-on,
+	.bootstrap-switch-off {
+		/*margin-left: 150px;*/
+		margin-bottom: 5px;
+	}
+	/*2018/5/29 16:28 肖凌云 输入框CSS样式  */
+			
+	.posContent {
+
+		width: 100%;
+		min-height: 20px;
+		max-height: 300px;
+	    _height: 120px;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 3px;
+		outline: 0;
+		border: 1px solid #a0b3d6;
+		font-size: 12px;
+	    line-height: 24px;
+		padding: 2px;
+		word-wrap: break-word;
+		overflow-x: hidden;
+		overflow-y: auto;
+		border-color: rgba(82, 168, 236, 0.8);
+		box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px rgba(82, 168, 236, 0.6);
+        /*background: #EDEDED;*/
+		/*font-size: 15;*/
+	}	
+	
+	body {
+		font-size: 12px;
+	}
+	.content1{
+		width: 65%;
+		/* height: 600px; */
+		border: 1px #ddd solid;
+		padding: 5px;
+		margin-bottom: 5px;
+		float:left;
+	}
+	.list{
+		width: 33%;
+		height: 700px;
+		border: 1px #ddd solid;
+		padding: 5px;
+		margin-bottom: 5px;
+		float:left;
+	}
+	/*.list div {*/
+	.list .posList {
+		border: 1px solid #ddd;
+		margin-bottom: 1px;
+		padding: 4px;
+		cursor: pointer;
+		/*2018/5/29 9:30 肖凌云 修改批注框背景色*/
+		background: #FAFAFA;
+	}
+	/*css批注样式*/
+	.postil, .postilFocus, .postilObjectList {
+		border-left: 1px solid #3082D6;
+		border-right: 1px solid #3082D6;
+		text-decoration: none;
+		cursor: default;
+	}
+	.postil, .postilObjectList {
+		background: #CCE0F5;
+	}
+	.postilFocus {
+		background: #98C1EB;
+	}
+	/*批注提示图标样式*/
+	.tipsIcon {
+		opacity: 0.80;
+		z-index: 4;
+		filter:alpha(opacity=80);
+	}
+	/*20180623 改*/
+	#content {
+		text-align: left;
+		white-space: pre-wrap;
+		position: relative;
+		z-index: 2;
+		background: rgba(255, 255, 255, 0);
+	}
+/* 	#underline{
+		background: linear-gradient(black, black) no-repeat; 
+		background-size: 100% 1px;
+		background-position: 0 1.15em;
+		text-shadow: .05em 0 white, -.05em 0 white;
+		
+	}
+	#strikeline{
+		background: linear-gradient(black, black) no-repeat; 
+		background-size: 100% 1px;
+		background-position: 0 0.725em;
+		text-shadow: .05em 0 white, -.05em 0 white;
+		
+	}
+	#highlight{
+		background:yellow;
+		
+	} */
+	.underline{
+		background: linear-gradient(black, red) no-repeat; 
+		background-size: 100% 2px;
+		background-position: 0 1.0em;
+		text-shadow: .05em 0 white, -.05em 0 white;
+		opacity:1.0;
+		
+	}
+	.strikeline{
+		background: linear-gradient(black, black) no-repeat; 
+		background-size: 100% 3px;
+		background-position: 0 0.5em;
+		text-shadow: .05em 0 white, -.05em 0 white;
+		opacity:1.0;
+		
+	}
+	.highlight{
+		background:yellow;
+		
+	}
+</style>
+<style type="text/css">
+	#wholeSelection,
+	.postilFocus,
+	.postilObjectList,
+	.strikeline,
+	.underline,
+	.highlight
+	 {
+		position: absolute;
+		margin: 0;
+		padding: 0;
+		border: dotted red 2px;
+		z-index: 1;
+		opacity: 0.5;
+	}
+			
+	#wholeSelectionInner {
+		margin: -2px;
+		z-index: 1;
+	}
+	
+	.wholeSelectionInner {
+		margin: -2px;
+		z-index: 1;
+	}
+	
+			
+	#startSelection,
+	#endSelection {
+		position: absolute;
+		margin: 0;
+		padding: 0;
+		background-color: yellow;
+		font-weight: bold;
+		font-size: 60%;
+	}
+			
+	#footer {
+		position: fixed;
+		background-color: lightgoldenrodyellow;
+		border-top: solid darkblue 1px;
+		bottom: 0;
+		padding: 5px 0;
+		width: 100%;
+	}
+</style>
+
+<script>
+	function changeColor(now,value){
+		//alert("value="+value);
+		//now.parentNode.style.color=value;
+		$(now).next().css("color",value);
+		now.style.backgroundColor = value;
+		var $div = $(now).parent();
+		var forid = $div.attr("forid");
+		$.each($("." + forid + " input"), function(a, b) {
+			$(b).attr("id",value);
+		});
+	}
+</script>
+</html>

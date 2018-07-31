@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.LiteratureMapper">
+	
+	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureEntity">
+		SELECT
+			`LITERATURE_ID`, 
+			`LITERATURE_NAME`, 
+			`LITERATURE_PATH`, 
+			`USER_ID`, 
+			`LITERATURE_TIME`
+		FROM
+			literature
+		<where>
+			<if test="literatureName != null and literatureName.trim() != ''">
+				LITERATURE_NAME LIKE concat('%',#{literatureName},'%')
+			</if>
+		</where>
+		ORDER BY
+			LITERATURE_ID DESC
+	</select>
+	
+	<select id="listForGroup" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureEntity">
+		SELECT
+			`LITERATURE_NAME`, 
+			`LITERATURE_AGE`,
+			`LITERATURE_REFERENCE`
+		FROM
+			literature
+		ORDER BY
+			LITERATURE_AGE DESC
+	</select>
+	
+	<select id="listForMainWord" resultType="String">
+		SELECT
+			`LITERATURE_KEYWORD`
+		FROM
+			literature_keyword
+		WHERE
+			LITERATURE_ID = #{literatureId}
+	</select>
+	
+	<select id="compareForMainWord" resultType="String">
+		SELECT
+			`LITERATURE_ID`
+		FROM
+			literature_keyword
+		WHERE
+			LITERATURE_ID != #{literatureId} AND (LITERATURE_KEYWORD = #{str1} OR LITERATURE_KEYWORD = #{str2})
+		ORDER BY 
+			LITERATURE_ID ASC
+	</select>
+	
+	<select id="listForAuthor" resultType="String">
+		SELECT
+			`LITERATURE_AUTHOR`
+		FROM
+			literature_author
+		WHERE
+			LITERATURE_ID = #{literatureId}
+	</select>
+	
+	<select id="compareForAuthor" resultType="String">
+		SELECT
+			`LITERATURE_ID`
+		FROM
+			literature_author
+		WHERE
+			LITERATURE_ID != #{literatureId} AND (LITERATURE_author = #{str1} OR LITERATURE_author = #{str2})
+		ORDER BY 
+			LITERATURE_ID ASC
+	</select>
+	
+
+	<select id="listForPage2" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureEntity">
+		SELECT
+			`LITERATURE_ID`, 
+			`LITERATURE_NAME`, 
+			`LITERATURE_PATH`, 
+			`USER_ID`, 
+			`LITERATURE_TIME`
+		FROM
+			literature
+		<where>
+			<if test="literatureId != null and literatureId.trim() != ''">
+				AND LITERATURE_ID LIKE concat('%',#{literatureId},'%') 
+			</if>
+		</where>
+		ORDER BY
+			LITERATURE_ID DESC
+	</select>
+	
+	<select id="strGetName" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureEntity">
+		SELECT 
+			`LITERATURE_NAME`,
+			`LITERATURE_ID`
+		FROM
+			literature
+	</select>
+	
+	<insert id= "addLiteratureKeyword">
+		INSERT INTO literature_keyword (
+			`LITERATURE_ID`,
+			`LITERATURE_KEYWORD`
+		)
+		VALUES (
+			#{literatureId},
+			#{literatureKeyword}
+		)
+	</insert>
+	
+	<insert id="save">
+		INSERT INTO literature (
+			`LITERATURE_ID`, 
+			`LITERATURE_NAME`, 
+			`LITERATURE_PATH`, 
+			`USER_ID`, 
+			`LITERATURE_TIME`,
+			`LITERATURE_AGE`,
+			`LITERATURE_REFERENCE`
+		)
+		VALUES (
+			#{literatureId}, 
+			#{literatureName}, 
+			#{literaturePath}, 
+			#{userId}, 
+			#{literatureTime},
+			#{literatureAge},
+			#{literatureReference}
+		);
+		INSERT INTO literature_author(
+			`LITERATURE_ID`,
+			`LITERATURE_AUTHOR`
+		)
+		VALUES(
+			#{literatureId},
+			#{literatureAuthor}
+		)
+	</insert>
+	
+	<select id="getObjectById" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureEntity">
+		SELECT
+			`LITERATURE_ID`, 
+			`LITERATURE_NAME`, 
+			`LITERATURE_PATH`, 
+			`USER_ID`, 
+			`LITERATURE_TIME`
+		FROM
+			literature
+		WHERE
+			LITERATURE_ID = #{literatureId}
+	</select>
+	
+	<update id="update">
+		UPDATE literature
+	 	<set>
+			<if test="literatureName != null">`LITERATURE_NAME` = #{literatureName}, </if>
+			<if test="literaturePath != null">`LITERATURE_PATH` = #{literaturePath}, </if>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="literatureTime != null">`LITERATURE_TIME` = #{literatureTime}</if>
+		</set>
+		WHERE
+			LITERATURE_ID = #{literatureId}
+	</update>
+	
+	<delete id="batchRemove">
+		DELETE
+		FROM
+			literature
+		WHERE
+			LITERATURE_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+<select id="MaxLiteratureID" resultType="Integer">
+		SELECT
+			MAX(`LITERATURE_ID`)
+		FROM
+			literature
+	</select>
+</mapper>

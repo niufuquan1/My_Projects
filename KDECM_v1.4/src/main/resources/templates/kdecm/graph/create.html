@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+</head>
+<body>
+<div id="dpLTE" class="container container-fluid" v-cloak>
+		<h1 style="text-align: center; vertical-align: middle;">批注网络生成</h1>
+			<div class="row">
+				<div class="col-md-2"><font size="3" color="red">批注网络ID</font></div>
+				<div class="col-md-2 col-md-offset-1"><font size="3" color="red">批注网络名称</font></div>
+				<div class="col-md-2 col-md-offset-1"><font size="3" color="red">创建者</font></div>
+				<div class="col-md-2 col-md-offset-1"><font size="3" color="red">当前批注组</font></div>
+			</div>
+			<div class="row">
+				<div class="col-md-2"><input  type="text" class="form-control" v-model="graph.graphId" readonly="readonly" /></div>
+				<div class="col-md-2 col-md-offset-1"><input  type="text" class="form-control" v-model="graph.graphName" readonly="readonly" /></div>
+				<div class="col-md-2 col-md-offset-1"><input  type="text" class="form-control" v-model="graph.graphCreatorName" readonly="readonly" /></div>
+				<div class="col-md-2 col-md-offset-1"><input  type="text" class="form-control" v-model="graph.groupId"  readonly="readonly" /></div>
+			</div>
+			
+			<div class="row"> 
+				<div class="col-md-offset-5"><font color="red" size="5">文献列表</font></div>
+			</div>
+			<div class="row">
+				<div class="col-md-offset-8" style="display:inline-block;"><input v-model="searchLit" @keyup.enter="loadLit" type="text" class="form-control" placeholder="请输入文献名称" style="width: 220px;" /></div>
+				<div style="display:inline-block;"><a class="btn btn-primary" @click="loadLit"><i class="fa fa-search"></i>&nbsp;查询</a></div>
+				<div style="display:inline-block;"><a class="btn btn-default" @click="addLit"><i class="fa fa-plus"></i>&nbsp;新增</a></div>
+			</div>
+			
+			<div class="row" >
+				<table id="dataGrid1" style="word-break:break-all; word-wrap:break-all;"></table>
+			</div>
+			<!--/////////////////////-->
+			
+			<div class="row" id="graphNodeList">
+				<div class="col-md-offset-5"><font color="red" size="5">批注网络-节点列表</font></div>
+				<div  class="row" style="float:right;">
+					<a class="btn btn-default" onclick="reload();"><i class="fa fa-refresh"></i>&nbsp;刷新</a> 
+					<a class="btn btn-default" @click="removeNode"><i class="fa fa-trash-o"></i>&nbsp;移除</a>
+				</div>
+			</div>
+			<div class="row">
+				<table id="dataGrid3" style="word-break:break-all; word-wrap:break-all;"></table>
+			</div>
+			<!--/////////////////////-->
+			<div class="row"> 
+				<div class="col-md-offset-5"><font color="red" size="5">文献-批注关系列表</font></div>
+			</div>
+			<div class="row"  style="float:right;">
+				<div style="display:inline-block;"><input v-model="searchRel" name="searchRel" id="searchRel" @keyup.enter="loadRel" type="text" class="form-control" placeholder="请输入关系名称" style="width: 220px;" /></div>
+				<div style="display:inline-block;"><a class="btn btn-primary" @click="loadRel"><i class="fa fa-search"></i>&nbsp;查询</a></div>
+				<div style="display:inline-block;"><a class="btn btn-default" @click="addRel"><i class="fa fa-plus"></i>&nbsp;新增</a></div>
+			</div>
+			<div class="row">
+				<table id="dataGrid2" style="word-break:break-all; word-wrap:break-all;"></table>
+			</div>
+			
+			
+			
+			
+			
+			<div class="row">
+				<div class="col-md-offset-5"><font color="red" size="5">批注网络-边列表</font></div>
+				<div  class="row" style="float:right;">
+					<a class="btn btn-default" onclick="reload();"><i class="fa fa-refresh"></i>&nbsp;刷新</a> 
+					<a class="btn btn-default" @click="removeRel"><i class="fa fa-trash-o"></i>&nbsp;移除</a>
+					<select v-model="type" autocomplete="off" @change="selectTarget" >
+						<option value = "0" selected = "selected" >全部关系</option>
+						<option value = "1">强化关系</option>
+						<option value = "2">单向关系</option>
+						<option value = "3">双向关系</option>
+					</select>
+				</div>
+			</div>
+			<div class="row">
+				<table id="dataGrid4" style="word-break:break-all; word-wrap:break-all;"></table>
+				<div class = "col-md-3 col-md-offset-5">
+				<!-- <a class="btn btn-default" @click="show"><i class="fa fa-refresh"></i>&nbsp;更新网络图</a> -->
+					<button class = "btn btn-primary btn-lg" @click="show">更新网络图</button>
+				</div>				
+			</div>
+			
+			
+
+</div>
+<div th:include="include/footer_js::footer"></div>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/kdecm/graph/echarts.js}"></script>
+<script th:src="@{/js/kdecm/graph/create.js}"></script>
+
+</body>
+</html>

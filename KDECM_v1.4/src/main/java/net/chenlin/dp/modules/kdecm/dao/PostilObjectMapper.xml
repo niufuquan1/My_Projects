@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.PostilObjectMapper">
+	
+	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.PostilObjectEntity">
+		SELECT
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_OBJECT_TEXT`, 
+			`POSTIL_OBJECT_ROWS_START`, 
+			`POSTIL_OBJECT_START`, 
+			`POSTIL_OBJECT_ROW_END`, 
+			`POSTIL_OBJECT_END`, 
+			`LITERATURE_ID`, 
+			`POSTIL_OBJECT_POS`
+		FROM
+			postil_object
+		ORDER BY
+			POSTIL_OBJECT_ID DESC
+	</select>
+	
+	<insert id="save">
+		INSERT INTO postil_object (
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_OBJECT_TEXT`, 
+			`POSTIL_OBJECT_ROWS_START`, 
+			`POSTIL_OBJECT_START`, 
+			`POSTIL_OBJECT_ROW_END`, 
+			`POSTIL_OBJECT_END`, 
+			`LITERATURE_ID`, 
+			`POSTIL_OBJECT_POS`
+		)
+		VALUES (
+			#{postilObjectId}, 
+			#{postilObjectText}, 
+			#{postilObjectRowsStart}, 
+			#{postilObjectStart}, 
+			#{postilObjectRowEnd}, 
+			#{postilObjectEnd}, 
+			#{literatureId}, 
+			#{postilObjectPos}
+		)
+	</insert>
+	
+	<select id="getObjectById" resultType="net.chenlin.dp.modules.kdecm.entity.PostilObjectEntity">
+		SELECT
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_OBJECT_TEXT`, 
+			`POSTIL_OBJECT_ROWS_START`, 
+			`POSTIL_OBJECT_START`, 
+			`POSTIL_OBJECT_ROW_END`, 
+			`POSTIL_OBJECT_END`, 
+			`LITERATURE_ID`, 
+			`POSTIL_OBJECT_POS`
+		FROM
+			postil_object
+		WHERE
+			POSTIL_OBJECT_ID = #{postilObjectId}
+	</select>
+	
+	<update id="update">
+		UPDATE postil_object
+	 	<set>
+			<if test="postilObjectText != null">`POSTIL_OBJECT_TEXT` = #{postilObjectText}, </if>
+			<if test="postilObjectRowsStart != null">`POSTIL_OBJECT_ROWS_START` = #{postilObjectRowsStart}, </if>
+			<if test="postilObjectStart != null">`POSTIL_OBJECT_START` = #{postilObjectStart}, </if>
+			<if test="postilObjectRowEnd != null">`POSTIL_OBJECT_ROW_END` = #{postilObjectRowEnd}, </if>
+			<if test="postilObjectEnd != null">`POSTIL_OBJECT_END` = #{postilObjectEnd}, </if>
+			<if test="literatureId != null">`LITERATURE_ID` = #{literatureId}, </if>
+			<if test="postilObjectPos != null">`POSTIL_OBJECT_POS` = #{postilObjectPos}</if>
+		</set>
+		WHERE
+			POSTIL_OBJECT_ID = #{postilObjectId}
+	</update>
+	
+	<delete id="batchRemove">
+		DELETE
+		FROM
+			postil_object
+		WHERE
+			POSTIL_OBJECT_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<insert id="insert" parameterType="net.chenlin.dp.modules.kdecm.entity.PostilObjectEntity">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="postilObjectId">
+        	SELECT LAST_INSERT_ID()
+      	</selectKey>	
+		INSERT INTO postil_object (
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_OBJECT_TEXT`, 
+			`POSTIL_OBJECT_ROWS_START`, 
+			`POSTIL_OBJECT_START`, 
+			`POSTIL_OBJECT_ROW_END`, 
+			`POSTIL_OBJECT_END`, 
+			`LITERATURE_ID`, 
+			`POSTIL_OBJECT_POS`
+		)
+		VALUES (
+			#{postilObjectId}, 
+			#{postilObjectText}, 
+			#{postilObjectRowsStart}, 
+			#{postilObjectStart}, 
+			#{postilObjectRowEnd}, 
+			#{postilObjectEnd}, 
+			#{literatureId}, 
+			#{postilObjectPos}
+		)
+	</insert>
+
+	<select id="loanPostilObject" resultType="net.chenlin.dp.modules.kdecm.entity.PostilObjectEntity">
+		SELECT
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_OBJECT_TEXT`, 
+			`POSTIL_OBJECT_ROWS_START`, 
+			`POSTIL_OBJECT_START`, 
+			`POSTIL_OBJECT_ROW_END`, 
+			`POSTIL_OBJECT_END`, 
+			`LITERATURE_ID`, 
+			`POSTIL_OBJECT_POS`
+		FROM
+			postil_object
+		WHERE
+			POSTIL_OBJECT_ID IN
+		<foreach item="postilObjectIds" collection="array" open="(" separator="," close=")">
+			#{postilObjectIds}
+		</foreach>
+	</select>
+	
+	<select id="getPostilObjectContentById_" resultType="java.lang.String">
+		SELECT
+			`POSTIL_OBJECT_TEXT`
+		FROM
+			postil_object
+		WHERE
+			POSTIL_OBJECT_ID IN
+			(
+					SELECT
+						POSTIL_OBJECT_ID
+					FROM
+						postil
+					WHERE
+					POSTIL_ID = #{postilId}
+						
+				)
+	</select>
+</mapper>

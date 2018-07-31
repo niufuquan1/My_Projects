@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<div id="dpLTE" class="container-fluid" v-cloak>
+	<div class="row">
+		<div class="col-md-4 form-inline pull-left">
+			<div class="form-group">
+				<a class="btn btn-primary" @click="change" align="right">&nbsp;切换</a>
+			</div>
+			
+		</div>
+		
+	</div>
+	<div class="row">
+		<table id="dataGrid"></table>
+	</div>
+</div>
+<div th:include="include/footer_js::footer"></div>
+<script type="text/javascript">
+		function getQueryString(name) {
+	    	var result = window.location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+	    	if (result == null || result.length < 1) {
+	        	return "";
+	    	}
+	    	return result[1];
+		}
+</script>
+<script type="text/javascript">
+	    var username=getQueryString("username");
+	    console.log(username);
+</script>
+
+
+	<script type="text/javascript">
+		function getQueryString(name) {
+			var result = window.location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+			if (result == null || result.length < 1) {
+		    	return "";
+			}
+			return result[1];
+		}
+	</script>
+	
+	<script type="text/javascript">
+		function change(){
+			var ck = $('#dataGrid').bootstrapTable('getSelections');
+			if(checkedRow(ck)){
+				console.log(ck[0].groupName);
+				currentGroupName=ck[0].groupName;
+				//alert("当前切换到"+currentGroupName);
+				localStorage.setItem("currentGroupName",currentGroupName);
+				localStorage.setItem("currentGroupId",ck[0].groupId);
+				//alert(localStorage.getItem("currentGroupName"));
+				var literatureId = getQueryString("literatureId");
+				if(literatureId=="") {
+					location.href="../../index.html";
+				} else {
+					//location.href="../../index.html?literatureId="+literatureId+"&userId=1&chapter=0";
+					location.href="../../index.html";
+				}
+			}
+		}
+	</script>
+<div th:include="include/footer_js::footer"></div>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/kdecm/group/listByUser.js}"></script>
+</body>
+</html>

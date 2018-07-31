@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id = "main" style="height: 720px;width: 800px;"></div>
+	<div id="buttons">
+		&nbsp;<button id="find_CorePostil_Btn" class="btn btn-primary" onclick="SendMsg1()">核心批注发现</button>
+		&nbsp;<button id="find_PostilGroupTheme_Btn" class="btn btn-primary" onclick="SendMsg2()">批注群主题及内部关系发现</button>
+		&nbsp;<button id="find_CorePrescription_Btn" class="btn btn-primary" onclick="SendMsg3()">核心药组挖掘</button>
+	</div>
+	
+	<div id = "find_CorePostil_Div" >
+		
+	</div>
+	<div id = "button1">
+		<button id="backBtn1" class="btn btn-primary" onclick="back1()">返回</button>
+	</div>
+	<div id="find_PostilGroupTheme_Div">
+		
+	</div>
+	<div id = "button2">
+		<button id="backBtn2" class="btn btn-primary" onclick="back2()">返回</button>
+	</div>
+	
+	<div id="find_CorePrescription_Div">
+		<table id="find_CorePrescription_Table_1" class="table table-condensed" >
+			<caption  style="text-align:center">核心药组之发现证候</caption>
+		  <thead>
+		    <tr>
+		      <th>证候名称</th>
+		    </tr>
+		  </thead>
+		  <tbody id="pathema"></tbody>
+		</table>
+		<table id="find_CorePrescription_Table_2" class="table table-condensed" >
+			<caption  style="text-align:center">核心药组发现药组</caption>
+			<thead>
+		    <tr>
+		      <th>核心药物</th>
+		      <th>附属药物</th>
+		    </tr>
+		  </thead>
+		  <tbody id="herbal"></tbody>
+		</table>
+		
+	</div>
+	<div id="button3">
+		<button id="backBtn3" class="btn btn-primary" onclick="back3()">返回</button>
+	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/libs/jquery.min.js}"></script>
+	<script th:src="@{/libs/vue.min.js}"></script>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/graph/echarts.js}"></script>
+    <script th:src="@{/js/kdecm/graph/show.js}"></script>
+    <script th:src="@{/js/kdecm/graph/html2canvas.js}"></script>
+    <script th:src="@{/js/kdecm/graph/find_Sth.js}"></script>
+</body>
+</html>

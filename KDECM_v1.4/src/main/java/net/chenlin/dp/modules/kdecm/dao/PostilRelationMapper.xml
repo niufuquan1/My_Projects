@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.PostilRelationMapper">
+	
+	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.PostilRelationEntity">
+		SELECT
+			`RELATION_ID`, 
+			`RELATION_NAME`, 
+			`RELATION_TYPE`, 
+			`RELATION_TYPE_NAME`, 
+			`USER_ID`, 
+			`USER_NAME`, 
+			`POSTIL_ID_1`, 
+			`POSTIL_NAME_1`, 
+			`LITERATURE_ID_1`, 
+			`LITERATURE_NAME_1`, 
+			`POSTIL_ID_2`, 
+			`POSTIL_NAME_2`, 
+			`LITERATURE_ID_2`, 
+			`LITERATURE_NAME_2`,
+			`GROUP_ID`
+		FROM
+			postil_relation
+		<where>
+			group_id = #{groupId}
+			<if test="name != null and name.trim() != ''">
+				AND RELATION_NAME LIKE concat('%',#{name},'%') 
+			</if>
+		</where>
+		ORDER BY
+			RELATION_ID ASC
+	</select>
+	
+	<select id="listForPageDistinctRelation" resultType="net.chenlin.dp.modules.kdecm.entity.PostilRelationEntity">
+		SELECT
+			distinct relation_name
+		FROM
+			postil_relation
+		<where>
+			group_id = #{groupId}
+			<if test="name != null and name.trim() != ''">
+				AND RELATION_NAME LIKE concat('%',#{name},'%') 
+			</if>
+		</where>
+		ORDER BY
+			RELATION_ID ASC
+	</select>
+	
+	<insert id="save">
+		INSERT INTO postil_relation (
+			`RELATION_NAME`, 
+			`RELATION_TYPE`, 
+			`RELATION_TYPE_NAME`, 
+			`USER_ID`, 
+			`USER_NAME`, 
+			`POSTIL_ID_1`, 
+			`POSTIL_NAME_1`, 
+			`LITERATURE_ID_1`, 
+			`LITERATURE_NAME_1`, 
+			`POSTIL_ID_2`, 
+			`POSTIL_NAME_2`, 
+			`LITERATURE_ID_2`, 
+			`LITERATURE_NAME_2`,
+			`GROUP_ID` 
+		)SELECT 
+			#{relationName}, 
+			#{relationType}, 
+			<choose>  
+            	<when test="relationType == 1">'强化关系',</when>  
+            	<when test="relationType == 2">'单向关系',</when>  
+            	<when test="relationType == 3">'双向关系',</when> 
+            	<when test="relationType == null">'',</when>  
+            </choose>  
+			#{userId}, 
+			#{userName}, 
+			#{postilId1}, 
+			#{postilName1}, 
+			#{literatureId1}, 
+			#{literatureName1}, 
+			#{postilId2}, 
+			#{postilName2}, 
+			#{literatureId2}, 
+			#{literatureName2},
+			#{groupId}
+		FROM dual  
+		WHERE NOT EXISTS
+			(select * from postil_relation where relation_name = #{relationName} and relation_type = #{relationType} and postil_id_1 = #{postilId1} and postil_id_2 = #{postilId2} and GROUP_ID = #{groupId} and USER_ID = #{userId})
+	</insert>
+	
+	<select id="getObjectByNameAndPostilId" resultType="net.chenlin.dp.modules.kdecm.entity.PostilRelationEntity">
+		SELECT
+			`RELATION_ID`, 
+			`RELATION_NAME`, 
+			`RELATION_TYPE`, 
+			`RELATION_TYPE_NAME`, 
+			`USER_ID`, 
+			`USER_NAME`, 
+			`POSTIL_ID_1`, 
+			`POSTIL_NAME_1`, 
+			`LITERATURE_ID_1`, 
+			`LITERATURE_NAME_1`, 
+			`POSTIL_ID_2`, 
+			`POSTIL_NAME_2`, 
+			`LITERATURE_ID_2`, 
+			`LITERATURE_NAME_2`,
+			`GROUP_ID`
+		FROM
+			postil_relation
+		WHERE
+			RELATION_NAME = #{relationName} and POSTIL_ID_1=#{postilId1} and POSTIL_ID_2 = #{postilId2} and GROUP_ID = #{groupId}
+	</select>
+	
+	<select id="getObjectById" resultType="net.chenlin.dp.modules.kdecm.entity.PostilRelationEntity">
+		SELECT
+			`RELATION_ID`, 
+			`RELATION_NAME`, 
+			`RELATION_TYPE`, 
+			`RELATION_TYPE_NAME`, 
+			`USER_ID`, 
+			`USER_NAME`, 
+			`POSTIL_ID_1`, 
+			`POSTIL_NAME_1`, 
+			`LITERATURE_ID_1`, 
+			`LITERATURE_NAME_1`, 
+			`POSTIL_ID_2`, 
+			`POSTIL_NAME_2`, 
+			`LITERATURE_ID_2`, 
+			`LITERATURE_NAME_2`,
+			`GROUP_ID`
+		FROM
+			postil_relation
+		WHERE
+			RELATION_ID = #{relationId}  and GROUP_ID = #{groupId}
+	</select>
+	
+	<update id="update">
+		UPDATE postil_relation
+	 	<set>
+			<if test="relationName != null">`RELATION_NAME` = #{relationName}, </if>
+	 		<if test="relationType != null">`RELATION_TYPE` = #{relationType}, 
+			    `RELATION_TYPE_NAME` = 
+	            <choose>  
+	            	<when test="relationType == 1">'强化关系',</when>  
+	            	<when test="relationType == 2">'单向关系',</when>  
+	            	<when test="relationType == 3">'双向关系',</when> 
+	            	<when test="relationType == null">'未知关系',</when>  
+	           	</choose>  
+           	</if>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="userName != null">`USER_NAME` = #{userName}, </if>
+			<if test="postilId1 != null">`POSTIL_ID_1` = #{postilId1}, </if>
+			<if test="postilName1 != null">`POSTIL_NAME_1` = #{postilName1}, </if>
+			<if test="literatureId1 != null">`LITERATURE_ID_1` = #{literatureId1}, </if>
+			<if test="literatureName1 != null">`LITERATURE_NAME_1` = #{literatureName1}, </if>
+			<if test="postilId2 != null">`POSTIL_ID_2` = #{postilId2}, </if>
+			<if test="postilName2 != null">`POSTIL_NAME_2` = #{postilName2}, </if>
+			<if test="literatureId2 != null">`LITERATURE_ID_2` = #{literatureId2}, </if>
+			<if test="literatureName2 != null">`LITERATURE_NAME_2` = #{literatureName2}</if>
+		</set>
+		WHERE
+			RELATION_ID = #{relationId}
+	</update>
+	
+<!-- 	<delete id="batchRemove">
+		DELETE
+		FROM
+			postil_relation
+		WHERE
+			RELATION_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+			 and GROUP_ID = #{groupId}
+	</delete> -->
+	
+	<delete id="removeByRelNameAndPostilId">
+		DELETE
+		FROM
+			postil_relation
+		WHERE
+			RELATION_NAME = #{relationName} and POSTIL_ID_1=#{postilId1} and POSTIL_ID_2 = #{postilId2} and GROUP_ID = #{groupId}
+	</delete>
+
+</mapper>

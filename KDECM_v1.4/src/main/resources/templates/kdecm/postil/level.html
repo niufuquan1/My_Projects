@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id = "main" style="width: 100%;height: 1000px;"></div>
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/libs/jquery.min.js}"></script>
+	<script th:src="@{/libs/vue.min.js}"></script>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/graph/echarts.js}"></script>
+    <script th:src="@{/js/kdecm/postil/level.js}"></script>
+</body>
+</html>

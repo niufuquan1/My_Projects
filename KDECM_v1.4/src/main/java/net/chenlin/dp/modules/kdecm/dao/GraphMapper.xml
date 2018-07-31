@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.GraphMapper">
+<!-- 图 -->
+	<!-- 查找该用户能看到的所有图、权限 -->
+	<select id="listOfGraph" resultType="net.chenlin.dp.modules.kdecm.entity.GraphSimpleEntity">
+		SELECT
+			`GRAPH_ID`, 
+			`GRAPH_NAME`, 
+			`GRAPH_CREATOR_ID`, 
+			`GRAPH_CREATOR_NAME`,
+			`GROUP_ID`
+		FROM
+			graph
+		<where>
+			(
+				group_id = #{groupId} or group_id is NULL or group_id in 
+					(
+						SELECT
+							`GROUP_ID`
+						FROM
+							pro_group
+						<where>
+							ifOpenNess = 1
+						</where>
+					)
+			
+			)
+			<if test="graphName != null and graphName.trim() != ''">
+				and 
+					(
+						graph_name LIKE concat('%',#{graphName},'%')
+						or 
+						graph_creator_name LIKE  concat('%',#{graphName},'%')
+					)
+			</if> 
+		</where>
+		ORDER BY
+			GRAPH_ID ASC
+	</select>
+	
+	<!-- 查询单一图 -->
+	<select id = "selectGraph" resultType="net.chenlin.dp.modules.kdecm.entity.GraphSimpleEntity">
+		SELECT
+			`GRAPH_ID`, 
+			`GRAPH_NAME`, 
+			`GRAPH_CREATOR_ID`, 
+			`GRAPH_CREATOR_NAME`
+		FROM
+			graph
+		WHERE
+			GRAPH_ID = #{graphId}
+	</select>
+
+	<!-- 添加一张图 -->
+	<insert id="addGraph">
+		INSERT INTO graph(
+			`GRAPH_ID`, 
+			`GRAPH_NAME`, 
+			`GRAPH_CREATOR_ID`, 
+			`GRAPH_CREATOR_NAME`,
+			`GROUP_ID`
+		)
+		VALUES (
+			#{graphId}, 
+			#{graphName}, 
+			#{graphCreatorId}, 
+			#{graphCreatorName},
+			#{groupId}
+		)
+	</insert>
+	
+	<!-- 更新一张图 -->
+	<update id="updateGraph">
+		UPDATE graph
+	 	<set>
+			<if test="graphName != null and graphName.trim() != ''">`GRAPH_NAME` = #{graphName}, </if>
+		</set>
+		WHERE
+			GRAPH_ID = #{graphId}
+	</update>
+	
+	<delete id="batchRemove">
+		DELETE
+		FROM
+			graph
+		WHERE
+			GRAPH_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+<!-- 点 -->
+	<!-- 根据图中所有关系查找对应的节点 -->
+	<select id="listOfNodeByEdge" resultType="net.chenlin.dp.modules.kdecm.entity.GnoPosEntity">
+		SELECT 
+			distinct 	
+			`GRAPH_NODE_ID`,
+			`GRAPH_ID`, 
+			`POSTIL_ID`, 
+			`POSTIL_CONTENT`, 
+			`LITERATURE_NAME` ,
+			`POSTIL_OBJECT_TEXT`
+		FROM
+			graph_node
+		LEFT JOIN 
+			postil
+		USING 
+			(POSTIL_ID) 
+		LEFT JOIN 
+			postil_object 
+		USING 
+			(POSTIL_OBJECT_ID) 
+		LEFT JOIN 
+			literature 
+		USING  
+			(LITERATURE_ID) 
+		WHERE
+			
+		ORDER BY
+			GRAPH_NODE_ID ASC
+	</select>
+	
+	<!-- 根据图id查找对应节点 -->
+	<select id="listOfNodeByGraphId" resultType="net.chenlin.dp.modules.kdecm.entity.GnoPosEntity">
+		SELECT
+			`GRAPH_NODE_ID`,
+			`GRAPH_ID`, 
+			`POSTIL_ID`, 
+			`POSTIL_CONTENT`, 
+			`LITERATURE_NAME` ,
+			`POSTIL_OBJECT_TEXT`
+		FROM
+			graph_node
+		LEFT JOIN 
+			postil
+		USING 
+			(POSTIL_ID) 
+		LEFT JOIN 
+			postil_object 
+		USING 
+			(POSTIL_OBJECT_ID) 
+		LEFT JOIN 
+			literature 
+		USING  
+			(LITERATURE_ID) 
+		WHERE
+			GRAPH_ID  = #{graphId}
+		ORDER BY
+			GRAPH_NODE_ID ASC
+	</select>
+	
+	<select id="selectGraphNodeBygraphIdpostilId" resultType="net.chenlin.dp.modules.kdecm.entity.GnoPosEntity">
+		SELECT
+			`GRAPH_NODE_ID`,
+			`GRAPH_ID`, 
+			`POSTIL_ID`
+		FROM
+			graph_node
+		WHERE
+			GRAPH_ID  = #{graphId} and POSTIL_ID = #{postilId}
+	</select>
+	
+	<!-- 根据文章名字查找能看到的所有批注 -->
+	<select id = "selectPostilidByLiteratureid" resultType="Long">
+		SELECT
+			`POSTIL_ID` 
+		FROM
+			postil
+		LEFT JOIN 
+			postil_object 
+		USING 
+			(POSTIL_OBJECT_ID) 
+		LEFT JOIN 
+			literature 
+		USING  
+			(LITERATURE_ID) 
+		WHERE
+			LITERATURE_ID = #{literatureId} and 
+			(
+				GROUP_ID = #{groupId} 
+				or
+				GROUP_ID is NULL
+				or
+				GROUP_ID in 
+					(
+						SELECT
+							`GROUP_ID`
+						FROM
+							pro_group
+						<where>
+							ifOpenNess = 1
+						</where>
+					)
+				
+			)
+	</select>
+
+	<!-- 批量添加所有节点，并且保证去重 -->
+	<insert id="addGraphNode">
+		INSERT INTO graph_node(
+			graph_id,
+			postil_id
+		) SELECT 
+			#{graphId},
+			#{postilId}
+		FROM dual  
+		WHERE NOT EXISTS
+			(select * from graph_node where graph_id = #{graphId} and postil_id = #{postilId})
+	</insert>
+	
+	<delete id="batchRemoveNode">
+		DELETE
+		FROM
+			graph_node
+		WHERE
+			GRAPH_NODE_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<delete id="removeGraphNode">
+		DELETE
+		FROM
+			graph_node
+		WHERE
+			GRAPH_ID = #{graphId}
+	</delete>
+	
+<!-- 边 -->
+	<!-- 根据图id列出所有边 -->
+	<select id="listOfEdgeByGraphId" resultType="net.chenlin.dp.modules.kdecm.entity.GedRelEntity">
+		SELECT
+			`GRAPH_EDGE_ID`,
+			`GRAPH_ID`, 
+			`RELATION_ID`, 
+			`RELATION_NAME`, 
+			`RELATION_TYPE`, 
+			`RELATION_TYPE_NAME`, 
+			`USER_ID`, 
+			`USER_NAME`, 
+			`POSTIL_ID_1`, 
+			`POSTIL_NAME_1`, 
+			`LITERATURE_ID_1`, 
+			`LITERATURE_NAME_1`, 
+			`POSTIL_ID_2`, 
+			`POSTIL_NAME_2`, 
+			`LITERATURE_ID_2`, 
+			`LITERATURE_NAME_2`
+		FROM
+			graph_edge
+		LEFT JOIN 
+			postil_relation 
+		USING 
+			(relation_id) 
+		WHERE
+			GRAPH_ID  = #{graphId}
+		ORDER BY
+			GRAPH_EDGE_ID ASC
+	</select>
+	
+	<!-- 根据图id列出对应关系的所有边 -->
+	<select id="listOfEdgeByType" resultType="net.chenlin.dp.modules.kdecm.entity.GedRelEntity">
+		SELECT
+			`GRAPH_EDGE_ID`,
+			`GRAPH_ID`, 
+			`RELATION_ID`, 
+			`RELATION_NAME`, 
+			`RELATION_TYPE`, 
+			`RELATION_TYPE_NAME`, 
+			`USER_ID`, 
+			`USER_NAME`, 
+			`POSTIL_ID_1`, 
+			`POSTIL_NAME_1`, 
+			`LITERATURE_ID_1`, 
+			`LITERATURE_NAME_1`, 
+			`POSTIL_ID_2`, 
+			`POSTIL_NAME_2`, 
+			`LITERATURE_ID_2`, 
+			`LITERATURE_NAME_2`
+		FROM
+			graph_edge
+		LEFT JOIN 
+			postil_relation 
+		USING 
+			(relation_id) 
+		WHERE
+			GRAPH_ID  = #{graphId} and RELATION_TYPE = #{type} 
+		ORDER BY
+			GRAPH_EDGE_ID ASC
+	</select>
+	
+	<select id="selectGraphEdgeBygraphIdrelationId" resultType="net.chenlin.dp.modules.kdecm.entity.GedRelEntity">
+		SELECT
+			`GRAPH_EDGE_ID`,
+			`GRAPH_ID`, 
+			`RELATION_ID`
+		FROM
+			graph_edge
+		<where>
+			GRAPH_ID  = #{graphId} and RELATION_ID = #{relationId}
+		</where>
+	</select>
+	 
+	 <!-- 根据文章id查询所有合适的边 -->
+	<select id = "selectRelationidByLiteratureid" resultType="Long">
+		SELECT
+			`RELATION_ID` 
+		FROM
+			postil_relation
+		WHERE
+			LITERATURE_ID_1 = #{literatureId} and LITERATURE_ID_2 = #{literatureId} and
+			(
+				GROUP_ID = #{groupId} 
+				or
+				GROUP_ID is NULL
+				or
+				GROUP_ID in 
+					(
+						SELECT
+							`GROUP_ID`
+						FROM
+							pro_group
+						<where>
+							ifOpenNess = 1
+						</where>
+					)
+				
+			)
+	</select>
+	 
+	<insert id="addGraphEdge">
+		INSERT INTO graph_edge(
+			graph_id,
+			relation_id
+		) SELECT 
+			#{graphId},
+			#{relationId}
+		FROM dual  
+		WHERE NOT EXISTS
+			(select * from graph_edge where graph_id = #{graphId} and relation_id = #{relationId});
+		INSERT INTO graph_node(
+			graph_id,
+			postil_id
+		) SELECT 
+			#{graphId},
+			(select postil_id_1 from postil_relation where relation_id = #{relationId})
+		FROM dual  
+		WHERE NOT EXISTS
+			(select * from graph_node where graph_id = #{graphId} and postil_id = (select postil_id_1 from postil_relation where relation_id = #{relationId}));
+		INSERT INTO graph_node(
+			graph_id,
+			postil_id
+		) SELECT 
+			#{graphId},
+			(select postil_id_2 from postil_relation where relation_id = #{relationId})
+		FROM dual  
+		WHERE NOT EXISTS
+			(select * from graph_node where graph_id = #{graphId} and postil_id = (select postil_id_2 from postil_relation where relation_id = #{relationId}));
+	</insert>
+	 
+	<delete id="batchRemoveEdge">
+		DELETE
+		FROM
+			graph_edge
+		WHERE
+			GRAPH_EDGE_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<delete id="removeGraphEdge">
+		DELETE
+		FROM
+			graph_edge
+		WHERE
+			GRAPH_ID = #{graphId}
+	</delete>
+	
+</mapper>

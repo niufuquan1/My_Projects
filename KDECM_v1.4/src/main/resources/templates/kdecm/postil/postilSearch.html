@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+<div id="dpLTE" class="container-fluid" v-cloak>
+	<div class="row">
+		<div class="col-md-4 form-inline pull-left">
+			<div class="form-group">
+		    	<input id="keyword2" v-model="keyword" @keyup.enter="load" type="text" class="form-control" placeholder="请输入批注关键字" style="width: 220px;"/>
+			</div>
+			<div class="form-group">
+				<a class="btn btn-primary" @click="load" align="right"><i class="fa fa-search"></i>&nbsp;查询</a>
+				<a class="btn btn-primary" @click="search" align="right"><i class="fa fa-search"></i>&nbsp;查看文献</a>
+			</div>
+		</div>
+	</div>
+	<div class="row" style="width: 100%;">
+		<table id="dataGrid" style="table-layout: fixed;word-break:break-all; word-wrap:break-all;"></table>
+	</div>
+</div>
+<div th:include="include/footer_js::footer"></div>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/kdecm/postil/postilSearch.js}"></script>
+</body>
+</html>

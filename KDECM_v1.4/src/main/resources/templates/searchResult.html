@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>中医经典理论及临床数据化协作研究平台</title>
+<link rel="stylesheet"
+	href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="css/css.css" rel="stylesheet" type="text/css" />
+<link href="css/reset.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<div class="nav clear">
+		<ul class="clear">
+			<li><a href="login.html" class="login">登录</a></li>
+			<li><a href="regist.html" class="register">注册</a></li>
+			<!-- <li><a href="#">论坛</a></li> -->
+		</ul>
+	</div>
+	<div id="dpLTE" class="resDiv">
+			<div>
+				<img style="margin:5% 29% 1% 30%" src="images/logo.jpg" />
+			</div>
+			<div style="text-align: center; margin:1% 5%; font-size: 40px; width:89%; color: rgb(207, 39, 30); font-family: LiSu;">中医经典理论及临床数据化协作研究平台</div>
+			<!-- <div style="float: left; margin: 5% 35% 1% 33%;">
+			<img src="images/logo.jpg"/>
+		</div>
+		<div
+			style="text-align: center; font-size: 40px; margin: 0 5% 2% 5%; color: rgb(207, 39, 30); font-family: LiSu;">中医经典理论及临床数据化协作研究平台</div> -->
+			<!-- <div style="font-size: 40px; margin: 30px 75px 30px 0; color: rgb(207, 39, 30); font-family: LiSu; float: right;">中医经典理论及临床数据化协作研究平台</div> -->
+
+			<div id="searchText">
+				<input id="txtKeyword" type="text" class="txtingput"
+					v-model="keyword" @keyup.enter="search" placeholder="  请输入查询关键字" />
+				<input type="button" class="txtbutton" id="litBtn" value="搜索"
+					@click="search">
+			</div>
+			<ul id="myTab" class="nav nav-tabs">
+				<li class="active"><a href="#literature" data-toggle="tab">文献</a>
+				</li>
+				<li><a href="#postil" data-toggle="tab">批注</a></li>
+			</ul>
+			<div id="myTabContent" class="tab-content">
+				<div class="tab-pane fade in active" id="literature">
+					<div id="listLit"></div>
+				</div>
+				<div class="tab-pane fade" id="postil">
+					<div id="listPos"></div>
+				</div>
+				<div style="height: 100px"></div>
+			</div>
+		</div>
+		<div th:include="include/footer_js::footer"></div>
+		<style>
+.resDiv {
+	width: 60%;
+	margin: 0 auto;
+}
+
+.txtingput {
+	width: 90%;
+	height: 40px;
+	line-height: 36px;
+	border: 1px solid;
+	border-color: rgb(204, 204, 204);
+	font-size: 16px;
+	/* 	margin:1% 1px 1% 15%; */
+}
+
+.txtingput:focus {
+	border-style: solid;
+	border-color: #03a9f4;
+}
+
+.txtbutton {
+	width: 8%;
+	height: 40px;
+	font-size: 16px;
+	font-weight: 700;
+	background: #38f;
+	color: #FFF;
+	line-height: 40px;
+	border: none;
+	font-size: 16px;
+	margin-bottom: 30px;
+}
+
+.txtbutton:hover {
+	background: rgb(49, 126, 243);
+}
+</style>
+		<script type="text/javascript" src="libs/vue.min.js"></script>
+		<script type="text/javascript" src="js/common.js"></script>
+		<script type="text/javascript" src="js/searchResult.js"></script>
+</body>
+</html>

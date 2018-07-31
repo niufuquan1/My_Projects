@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+
+<div id="dpLTE" class="container-fluid" v-cloak>    
+    <div class="row" style="width: 300%;">
+		<div class="col-md-4 form-inline pull-left">		   		
+			<div class="form-group" style="float:right;">
+		        <a class="btn btn-primary" @click="search" align="right"><i class="fa fa-search"></i>&nbsp;查询</a>
+	        </div>
+		</div>		
+	</div>
+	<div class="row" style="width: 100%;">
+		<table id="dataGrid" style="table-layout: fixed;word-break:break-all; word-wrap:break-all;"></table>
+	</div>
+	
+	<div class="hiddenArea" id="hiddenArea">
+  		<input type="hidden" class="currentUserId" v-model="userId"/>
+    </div>
+</div>
+
+
+<div th:include="include/footer_js::footer"></div>
+<script th:src="@{/js/common.js}"></script>
+<script th:src="@{/js/kdecm/postil/userownpostilSearch.js}">
+
+</script>
+</body>
+</html>

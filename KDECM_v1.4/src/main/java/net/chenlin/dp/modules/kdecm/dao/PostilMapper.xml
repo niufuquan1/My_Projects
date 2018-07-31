@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.PostilMapper">
+	
+	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.PostilEntity">
+		SELECT
+			`POSTIL_ID`, 
+			`USER_ID`, 
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_TIME`, 
+			`POSTIL_CONTENT`, 
+			`POSTIL_TYPE`, 
+			`POSTIL_OPENNESS`,
+			`GROUP_ID`, 
+			`POSTIL_FORID`
+		FROM
+			postil
+		<where>
+			<if test="keyword != null">
+				POSTIL_CONTENT = #{keyword} 
+			</if>
+		</where>
+		ORDER BY
+			POSTIL_ID DESC
+	</select>
+	
+	<select id="listForGroup" resultType="net.chenlin.dp.modules.kdecm.entity.PostilEntity">
+		SELECT
+			`USER_ID`,  
+			`POSTIL_TIME`, 
+			`POSTIL_CONTENT`
+		FROM
+			postil
+		<where>
+				<if test="postilContent != null and postilContent.trim() != ''">
+					AND POSTIL_CONTENT LIKE concat('%',#{postilContent},'%')
+				</if>
+				AND	GROUP_ID = #{groupId}
+		</where>
+		ORDER BY
+			POSTIL_ID DESC
+	</select>
+	
+	<insert id="save">
+		INSERT INTO postil (
+			`POSTIL_ID`, 
+			`USER_ID`, 
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_TIME`, 
+			`POSTIL_CONTENT`, 
+			`POSTIL_TYPE`, 
+			`POSTIL_OPENNESS`,
+			`GROUP_ID`, 
+			`POSTIL_FORID`
+		)
+		VALUES (
+			#{postilId}, 
+			#{userId}, 
+			#{postilObjectId}, 
+			#{postilTime}, 
+			#{postilContent}, 
+			#{postilType}, 
+			#{postilOpenness},
+			#{groupId}, 
+			#{postilForid}
+		)
+	</insert>
+	
+	<select id="getObjectById" resultType="net.chenlin.dp.modules.kdecm.entity.PostilEntity">
+		SELECT
+			`POSTIL_ID`, 
+			`USER_ID`, 
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_TIME`, 
+			`POSTIL_CONTENT`, 
+			`POSTIL_TYPE`, 
+			`POSTIL_OPENNESS`,
+			`GROUP_ID`, 
+			`POSTIL_FORID`
+		FROM
+			postil
+		WHERE
+			POSTIL_ID = #{postilId}
+	</select>
+	
+	<update id="update">
+		UPDATE postil
+	 	<set>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="postilObjectId != null">`POSTIL_OBJECT_ID` = #{postilObjectId}, </if>
+			<if test="postilTime != null">`POSTIL_TIME` = #{postilTime}, </if>
+			<if test="postilContent != null">`POSTIL_CONTENT` = #{postilContent}, </if>
+			<if test="postilType != null">`POSTIL_TYPE` = #{postilType}, </if>
+			<if test="postilOpenness != null">`POSTIL_OPENNESS` = #{postilOpenness}, </if>
+			<if test="groupId != null">`GROUP_ID` = #{groupId}, </if>
+			<if test="postilForid != null">`POSTIL_FORID` = #{postilForid}</if>
+		</set>
+		WHERE
+			POSTIL_ID = #{postilId}
+	</update>
+	
+	<delete id="batchRemove">
+		DELETE
+		FROM
+			postil
+		WHERE
+			POSTIL_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<insert id="insert" parameterType="net.chenlin.dp.modules.kdecm.entity.PostilEntity">
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="postilId">
+        	SELECT LAST_INSERT_ID()
+      	</selectKey>
+		INSERT INTO postil (
+			`POSTIL_ID`, 
+			`USER_ID`, 
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_TIME`, 
+			`POSTIL_CONTENT`, 
+			`POSTIL_TYPE`, 
+			`POSTIL_OPENNESS`,
+			`GROUP_ID`, 
+			`POSTIL_FORID`
+		)
+		VALUES (
+			#{postilId}, 
+			#{userId}, 
+			#{postilObjectId}, 
+			#{postilTime}, 
+			#{postilContent}, 
+			#{postilType}, 
+			#{postilOpenness},
+			#{groupId}, 
+			#{postilForid}
+		)
+	</insert>
+	<delete id="remove">
+		DELETE
+		FROM
+			postil
+		WHERE
+			POSTIL_ID = #{postilId}
+	</delete>	
+
+	<select id="listRecommend"
+		resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+		POSTIL_OBJECT_TEXT, 
+		POSTIL_CONTENT 
+		FROM
+		postil_object, postil 
+		WHERE postil_object.POSTIL_OBJECT_ID = postil.POSTIL_OBJECT_ID 
+		AND POSTIL_OBJECT_TEXT LIKE concat('%',#{selectedText},'%')
+	</select>
+	
+	<select id="loanPostil" resultType="net.chenlin.dp.modules.kdecm.entity.PostilEntity">
+		SELECT
+			`POSTIL_ID`, 
+			`USER_ID`, 
+			`POSTIL_OBJECT_ID`, 
+			`POSTIL_TIME`, 
+			`POSTIL_CONTENT`, 
+			`POSTIL_TYPE`, 
+			`POSTIL_OPENNESS`,
+			`GROUP_ID`, 
+			`POSTIL_FORID`
+		FROM
+			postil
+		WHERE
+			GROUP_ID = #{groupId} AND POSTIL_OBJECT_ID IN(SELECT POSTIL_OBJECT_ID FROM postil_object WHERE LITERATURE_ID = #{literatureId})
+	</select>
+	
+	<update id="update2">
+		UPDATE postil
+	 	<set>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="postilObjectId != null">`POSTIL_OBJECT_ID` = #{postilObjectId}, </if>
+			<if test="postilTime != null">`POSTIL_TIME` = #{postilTime}, </if>
+			<if test="postilContent != null">`POSTIL_CONTENT` = #{postilContent}, </if>
+			<if test="postilType != null">`POSTIL_TYPE` = #{postilType}, </if>
+			<if test="postilOpenness != null">`POSTIL_OPENNESS` = #{postilOpenness}, </if>
+			<if test="groupId != null">`GROUP_ID` = #{groupId}, </if>
+			<if test="postilForid != null">`POSTIL_FORID` = #{postilForid}</if>
+		</set>
+		WHERE
+			POSTIL_FORID = #{postilForid}
+	</update>
+
+	<delete id="removeByForId">
+		DELETE
+		FROM
+			postil
+		WHERE
+			POSTIL_FORID = #{postilForid}
+	</delete>	
+	
+	<select id="getPostilContentById_" resultType="java.lang.String">
+		SELECT 
+			`POSTIL_CONTENT`
+		FROM
+			postil
+		WHERE
+			POSTIL_ID = #{postilId} 
+	</select>	
+</mapper>

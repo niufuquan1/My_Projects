@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.LiteratureObjectMapper">
+	
+	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureObjectEntity">
+		SELECT
+			`LITERATURE_OBJECT_ID`, 
+			`LITERATURE_ID`, 
+			`LITERATURE_OBJECT_TEXT`, 
+			`LITERATURE_OBJECT_TYPE`, 
+			`LITERATURE_OBJECT_ROW`
+		FROM
+			literature_object
+		ORDER BY
+			LITERATURE_OBJECT_ID DESC
+	</select>
+	
+	<select id="listForPage2" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureObjectEntity">
+		SELECT
+			`LITERATURE_OBJECT_ID`, 
+			`LITERATURE_ID`, 
+			`LITERATURE_OBJECT_TEXT`, 
+			`LITERATURE_OBJECT_TYPE`, 
+			`LITERATURE_OBJECT_ROW`
+		FROM
+			literature_object
+		<where>
+			<if test="literatureId != null">
+				AND LITERATURE_ID = #{literatureId} 
+			</if>
+		</where>
+		ORDER BY
+			LITERATURE_OBJECT_ID
+	</select>
+	
+	<select id="listForPage3" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureObjectEntity">
+		SELECT
+			`LITERATURE_OBJECT_ID`, 
+			`LITERATURE_ID`, 
+			`LITERATURE_OBJECT_TEXT`, 
+			`LITERATURE_OBJECT_TYPE`, 
+			`LITERATURE_OBJECT_ROW`
+		FROM
+			literature_object
+		<where>
+			<if test="literatureObjectText != null">
+				AND LITERATURE_OBJECT_TEXT LIKE concat('%', #{literatureObjectText} ,'%')
+			</if>
+		</where>
+		ORDER BY
+			LITERATURE_OBJECT_ID
+	</select>
+	
+	<insert id="save">
+		INSERT INTO literature_object (
+			`LITERATURE_OBJECT_ID`, 
+			`LITERATURE_ID`, 
+			`LITERATURE_OBJECT_TEXT`, 
+			`LITERATURE_OBJECT_TYPE`, 
+			`LITERATURE_OBJECT_ROW`
+		)
+		VALUES (
+			#{literatureObjectId}, 
+			#{literatureId}, 
+			#{literatureObjectText}, 
+			#{literatureObjectType}, 
+			#{literatureObjectRow}
+		)
+	</insert>
+	
+	<select id="getObjectById" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureObjectEntity">
+		SELECT
+			`LITERATURE_OBJECT_ID`, 
+			`LITERATURE_ID`, 
+			`LITERATURE_OBJECT_TEXT`, 
+			`LITERATURE_OBJECT_TYPE`, 
+			`LITERATURE_OBJECT_ROW`
+		FROM
+			literature_object
+		WHERE
+			LITERATURE_OBJECT_ID = #{literatureObjectId}
+	</select>
+	
+	<update id="update">
+		UPDATE literature_object
+	 	<set>
+			<if test="literatureId != null">`LITERATURE_ID` = #{literatureId}, </if>
+			<if test="literatureObjectText != null">`LITERATURE_OBJECT_TEXT` = #{literatureObjectText}, </if>
+			<if test="literatureObjectType != null">`LITERATURE_OBJECT_TYPE` = #{literatureObjectType}, </if>
+			<if test="literatureObjectRow != null">`LITERATURE_OBJECT_ROW` = #{literatureObjectRow}</if>
+		</set>
+		WHERE
+			LITERATURE_OBJECT_ID = #{literatureObjectId}
+	</update>
+	
+	<delete id="batchRemove">
+		DELETE
+		FROM
+			literature_object
+		WHERE
+			LITERATURE_OBJECT_ID IN
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+<insert id="SaveAnalysisResult" >
+		INSERT INTO literature_object (
+			`LITERATURE_ID`, 
+			`LITERATURE_OBJECT_TEXT`, 
+			`LITERATURE_OBJECT_TYPE`,
+			`LiTERATURE_OBJECT_ROW`
+		)
+		VALUES (
+			#{literatureId}, 
+			#{literatureObjectText}, 
+			#{literatureObjectType},
+			#{literatureObjectRow}
+		)
+	</insert>
+</mapper>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+<div id="dpLTE" class="container-fluid" v-cloak>
+	<div class="row">
+		<div class="col-md-4 form-inline pull-left" >
+			<div class="form-group">
+		    	<input v-model="keyword" @keyup.enter="load" type="text" class="form-control" placeholder="请输入批注网络名称" style="width: 220px;" />
+			</div>
+			<div class="form-group">
+			    <a class="btn btn-primary" @click="load"><i class="fa fa-search"></i>&nbsp;查询</a>
+			</div>
+		</div>
+		
+		<div class="col-md-8">
+			<div class="btn-toolbar pull-right">
+				<div style="display:inline-block;">
+				    <input v-model="graph.graphId" type="text" class="form-control" placeholder="批注网络ID" style="width: 120px;" readonly="readonly"/>
+				</div>
+				<div style="display:inline-block;">
+				    <input v-model="graph.graphName" type="text" class="form-control" placeholder="批注网络名称" style="width: 150px;" readonly="readonly"/>
+				</div>
+				<div class="btn-group" style="float:right;">
+				    <a class="btn btn-default" @click="enter"><i class="fa fa-plus"></i>&nbsp;进入</a>
+		            <a class="btn btn-default" onclick="reload();"><i class="fa fa-refresh"></i>&nbsp;刷新</a>
+		            <a class="btn btn-default" @click="add"><i class="fa fa-plus"></i>&nbsp;新建</a>
+		            <a class="btn btn-default" @click="edit"><i class="fa fa-pencil-square-o"></i>&nbsp;编辑</a>
+		            <a class="btn btn-default" @click="remove"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+		        </div>
+	        </div>
+		</div>
+	</div>
+	<div class="row" style="word-break:break-all; word-wrap:break-all;">
+		<table id="dataGrid"></table>
+	</div>
+</div>
+<div th:include="include/footer_js::footer"></div>
+<script th:src="@{/js/kdecm/graph/list.js}"></script>
+</body>
+</html>

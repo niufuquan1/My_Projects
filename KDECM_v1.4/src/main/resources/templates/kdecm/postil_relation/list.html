@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id="dpLTE" class="container-fluid" v-cloak>
+		<table border="1" cellspacing="0" width="1150px">
+			<tr>
+				<td width="250px">
+					<input v-model="keyword" @keyup.enter="load" type="text"
+					class="form-control" placeholder="请输入“批注关系”关键字" style="width:250px;" />
+				</td>
+				<td width="100px">
+					<a class="btn btn-primary" @click="load">
+						<i	class="fa fa-search"></i>&nbsp;查询
+					</a>
+				</td>
+				<td colspan="" align="right" width="800px">
+					<div class="btn-group">
+						<a v-if="hasPermission('kdecm:postil_relation:list')"
+							class="btn btn-default" onclick="reload();"><i
+							class="fa fa-refresh"></i>&nbsp;刷新</a> <a
+							v-if="hasPermission('kdecm:postil_relation:edit')"
+							class="btn btn-default" @click="edit"><i
+							class="fa fa-pencil-square-o"></i>&nbsp;编辑</a> <a
+							v-if="hasPermission('kdecm:postil_relation:remove')"
+							class="btn btn-default" @click="remove"><i
+							class="fa fa-trash-o"></i>&nbsp;删除</a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td rowspan="2" colspan="2">
+					<div id="grid">
+						<table id="dataGrid" style="table-layout: fixed;word-break:break-all; word-wrap:break-all;"></table>
+					</div>
+				</td>
+				<td colspan="" id="grid1">
+					<div>
+						<table id="dataGrid1" style="table-layout: fixed;word-break:break-all; word-wrap:break-all;"></table>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div id="grid2">
+						<table id="dataGrid2" style="table-layout: fixed;word-break:break-all; word-wrap:break-all;"></table>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/postil_relation/list.js}"></script>
+</body>
+</html>

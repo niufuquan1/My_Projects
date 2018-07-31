@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>中医经典理论及临床数据化协作研究平台</title>
+<link href="css/css.css" rel="stylesheet" type="text/css" />
+<link href="css/reset.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+	<div style="height: 100%;">
+		<div style="height: 90%;">
+			<div class="nav clear">
+				<ul class="clear">
+					<li><a href="login.html" id="login">登录</a></li>
+					<li><a href="regist.html" id="register">注册</a></li>
+					<!-- <li><a href="#">论坛</a></li> -->
+				</ul>
+			</div>
+			<div class="search1" style="width:90%;">
+				<div class="imglog">
+					<img src="images/logo.jpg" />
+				</div>
+				<div
+					style="text-align: center; font-size: 40px; margin: 0 5% 2% 5%; color: rgb(207, 39, 30); font-family: LiSu;">中医经典理论及临床数据化协作研究平台</div>
+				<div id="searchText">
+					<input type="text" class="txtingput" v-model="keyword"
+						@keyup.enter="search" placeholder="  请输入查询关键字" /> <input
+						type="button" class="txtbutton" id="litBtn" value="搜索"
+						@click="search">
+					<!-- <input type="hidden" class="currentUserName" v-model="username" /> -->
+				</div>
+			</div>
+		</div>
+		<div class="container" style="height: 10%;">
+			<a style="margin-right: 10px;">©2018</a>
+			<ul class="clearfix">
+				<li><a href="http://www.satcm.gov.cn/" target="_blank">国家中医药管理局</a></li>
+				<li><a href="http://www.bucm.edu.cn/" target="_blank">北京中医药大学</a></li>
+				<li><a href="http://kdecm.uestc.edu.cn/" target="_blank">电子科技大学KDECM实验室</a></li>
+			</ul>
+		</div>
+	</div>
+	<div th:include="include/footer_js::footer"></div>
+	<script type="text/javascript" src="libs/jquery.min.js"></script>
+	<script type="text/javascript" src="libs/vue.min.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript">
+		//alert($(".currentUserId").val());
+
+		/*  
+		 * author:zmy
+		 */
+		$(function() {
+			hasLogin();
+		});
+
+		function hasLogin() {
+			//var userName = document.cookie.split("=")[1];
+			var userName = document.cookie.replace(/(?:(?:^|.*;\s*)username\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+			//alert(document.cookie);
+			//alert("++" + userName + "++");
+			if (userName != null && userName != "") {
+				$("#login").html(userName);
+				$("#login").attr("href", "index.html");
+				$("#register").remove();
+			}
+		}
+
+		var vm = new Vue({
+			el : '#searchText',
+			data : {
+				keyword : '',
+			},
+			methods : {
+				search : function(event) {
+					var keyword = vm.keyword;
+					if (keyword == "") {
+						var queryString = "home.html";
+						queryString = encodeURI(queryString);
+						window.location.href = queryString;
+					} else {
+						var queryString = "searchResult.html?keyword="
+								+ keyword;
+						queryString = encodeURI(queryString);
+						window.location.href = queryString;
+					}
+				}
+			}
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>POSTIL</title>
+  <meta http-equiv=content-type content="text/html; charset=UTF-8">
+  <!-- <link th:href="@{../../css/common.min.css}" rel="stylesheet"/> -->
+  <link th:href="@{/css/facebook.css}" id="artDialogSkin"  rel="stylesheet"/>
+  <style type="text/css">
+	body {
+		font-size: 12px;
+	}
+	.content{
+		width: 60%;
+		height: 500px;
+		border: 1px #ddd solid;
+		padding: 5px;
+		margin-bottom: 5px;
+		float:left;
+	}
+	.list{
+		width: 30%;
+		height: 500px;
+		border: 1px #ddd solid;
+		padding: 5px;
+		margin-bottom: 5px;
+		float:left;
+	}
+	.list div {
+		border: 1px solid #ddd;
+		margin-bottom: 5px;
+		padding: 10px;
+		cursor: pointer;
+	}
+	/*css批注样式*/
+	.postil, .postilFocus {
+		border-left: 1px solid #3082D6;
+		border-right: 1px solid #3082D6;
+		text-decoration: none;
+		cursor: default;
+	}
+	.postil {
+		background: #CCE0F5;
+	}
+	.postilFocus {
+		background: #98C1EB;
+	}
+	/*批注提示图标样式*/
+	.tipsIcon {
+		opacity: 0.80;
+		z-index: 1;
+		filter:alpha(opacity=80);
+	}
+  </style>
+  
+ </head>
+ 
+ <body>
+  <div id="icon" style="display: none; position: absolute;" title="添加批注">
+  	<img th:src="@{/images/postil/tips.png}" class="tipsIcon">
+  </div>
+  <div class="content">
+  	<span style="font-family:宋体;"><span style="font-size:12.0000pt;">系哦啊高房价爱神的箭阿基督教垃圾分类金发科技卢卡斯几点啦就撒娇的链接啊国防军案件达科技馆就爱看到家啦上级高级案例</span></span>
+  </div>
+  <div class="list"></div>
+  <div th:include="include/footer_js :: footer"></div>
+  <script th:src="@{/js/kdecm/postil/artDialog.min.js}"></script>
+  <script th:src="@{/js/kdecm/postil/jquery-1.6.4.min.js}"></script>
+  <script th:src="@{/js/kdecm/postil/postil.js}"></script>
+ </body>
+</html>

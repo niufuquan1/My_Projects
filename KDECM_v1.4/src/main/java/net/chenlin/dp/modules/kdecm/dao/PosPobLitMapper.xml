@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.PosPobLitMapper">
+	
+	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			* 
+		FROM 
+			postil 
+		LEFT JOIN 
+			postil_object 
+		USING 
+			(POSTIL_OBJECT_ID) 
+		LEFT JOIN 
+			literature 
+		USING  
+			(LITERATURE_ID) 
+		<where>
+			GROUP_ID = #{groupId}
+			<if test="postilId != null">
+				AND POSTIL_ID = #{postilId} 
+			</if>
+			<if test="searchtext != null and searchtext.trim() != ''">
+				AND POSTIL_CONTENT LIKE concat('%',#{searchtext},'%') 
+			</if>
+			<if test="relationName != null and relationName.trim() != '' and flag != null and flag.trim() != ''">
+				AND POSTIL_ID IN
+				(select postil_id_1 from postil_relation where relation_name like concat('',#{relationName},'')) 
+			</if>
+			<if test="relationName != null and relationName.trim() != '' and postilId1 != null">
+				AND POSTIL_ID IN
+				(select postil_id_2 from postil_relation where postil_id_1=#{postilId1} and relation_name like concat('',#{relationName},'')) 
+			</if>
+		</where>
+		ORDER BY 
+			LITERATURE_NAME DESC
+	</select>
+
+	<select id="listByLiteratureId" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			* 
+		FROM 
+			postil 
+		LEFT JOIN 
+			postil_object 
+		USING 
+			(POSTIL_OBJECT_ID) 
+		LEFT JOIN 
+			literature 
+		USING  
+			(LITERATURE_ID) 
+		WHERE 
+			LITERATURE_ID = #{literatureId}
+		ORDER BY 
+			POSTIL_OBJECT_ROWS_START ASC, POSTIL_OBJECT_START ASC, POSTIL_OBJECT_ROW_END DESC, POSTIL_OBJECT_END DESC
+	</select>
+
+	<select id="listPosPobLitForPage" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			* 
+		FROM 
+			postil 
+		LEFT JOIN 
+			postil_object 
+		USING 
+			(POSTIL_OBJECT_ID) 
+		LEFT JOIN 
+			literature 
+		USING  
+			(LITERATURE_ID) 
+		WHERE 
+			POSTIL_CONTENT LIKE '${searchtext}%'
+		ORDER BY 
+			LITERATURE_NAME DESC
+	</select>
+
+	<select id="posPobLitById" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			* 
+		FROM 
+			postil 
+		LEFT JOIN 
+			postil_object 
+		USING 
+			(POSTIL_OBJECT_ID) 
+		LEFT JOIN 
+			literature 
+		USING  
+			(LITERATURE_ID) 
+		WHERE 
+			POSTIL_ID = #{postilId}
+	</select>
+
+	<select id="listForPage1" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			*
+		FROM 
+			postil AS a, postil_object AS b, literature AS c
+		WHERE 
+			a.POSTIL_OBJECT_ID = b.POSTIL_OBJECT_ID
+			AND b.LITERATURE_ID = c.LITERATURE_ID 
+			AND b.LITERATURE_ID = #{literatureId}
+			
+	</select>
+
+	<select id="listForPage2" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			*
+		FROM 
+			postil AS a, postil_object AS b, literature AS c, pro_group AS d
+		WHERE 
+			a.POSTIL_OBJECT_ID = b.POSTIL_OBJECT_ID
+			AND b.LITERATURE_ID = c.LITERATURE_ID
+			AND a.GROUP_ID = d.GROUP_ID
+			AND POSTIL_CONTENT != ''
+			AND a.GROUP_ID != ''
+			AND d.IFOpenNess = 1
+			
+			<if test="postilContent != null and postilContent.trim() != ''">
+				AND POSTIL_CONTENT LIKE concat('%',#{postilContent},'%')
+			</if>
+	</select>
+	
+	<select id="listForPage3" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			*
+		FROM 
+			postil AS a, postil_object AS b, literature AS c
+		WHERE 
+			a.POSTIL_OBJECT_ID = b.POSTIL_OBJECT_ID
+			AND b.LITERATURE_ID = c.LITERATURE_ID
+			
+			<if test="literatureId != null">
+				AND b.LITERATURE_ID LIKE #{literatureId}
+			</if>
+	</select>
+	
+	<select id="listForPage4" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			*
+		FROM 
+			postil AS a, postil_object AS b, literature AS c
+		WHERE 
+			a.POSTIL_OBJECT_ID = b.POSTIL_OBJECT_ID
+			AND b.LITERATURE_ID = c.LITERATURE_ID
+			
+			<if test="postilContent != null">
+				AND POSTIL_CONTENT LIKE concat('%',#{postilContent},'%')
+			</if>
+	</select>
+	
+	<select id="listForPageuserown" resultType="net.chenlin.dp.modules.kdecm.entity.PosPobLitEntity">
+		SELECT 
+			*
+		FROM 
+			postil AS a, postil_object AS b, literature AS c
+		WHERE 			
+			a.POSTIL_OBJECT_ID = b.POSTIL_OBJECT_ID
+			AND b.LITERATURE_ID = c.LITERATURE_ID
+			AND a.USER_ID = #{userId}
+			
+			<if test="postilTime != null and postilTime.trim() != ''">
+				AND POSTIL_TIME LIKE concat('%',#{postilTime},'%') 
+			</if>
+		ORDER BY
+		POSTIL_ID DESC
+	</select>
+</mapper>

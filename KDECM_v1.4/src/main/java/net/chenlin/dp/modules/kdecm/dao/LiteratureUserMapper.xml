@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.modules.kdecm.dao.LiteratureUserMapper">
+	
+	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureUserEntity">
+		SELECT
+			`LITERATURE_ID`, 
+			`LITERATURE_NAME`, 
+			`LITERATURE_PATH`, 
+			`USER_ID`, 
+			`LITERATURE_TIME`,
+			`USERNAME`
+		FROM
+			literature
+		LEFT JOIN 
+			sys_user 
+		USING 
+			(user_id) 
+		<where>
+			<if test="literatureName != null and literatureName.trim() != ''">
+				AND LITERATURE_NAME LIKE concat('%',#{literatureName},'%') 
+			</if>
+		</where>
+		ORDER BY
+			LITERATURE_ID ASC
+	</select>
+
+</mapper>
+
+<!-- SELECT `LITERATURE_ID`,`LITERATURE_NAME`,`LITERATURE_PATH`,`USER_ID`,`LITERATURE_TIME`,`USERNAME` FROM literature LEFT JOIN sys_user USING (user_id); -->
