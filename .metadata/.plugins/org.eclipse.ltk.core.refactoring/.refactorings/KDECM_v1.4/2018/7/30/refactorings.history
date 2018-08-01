@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;net.chenlin.dp.modules.kdecm.algorithm.ThirdFuncEntity&apos; to &apos;ThirdFuncResultEntity&apos;&#x0D;&#x0A;- Original project: &apos;KDECM_v1.4&apos;&#x0D;&#x0A;- Original element: &apos;net.chenlin.dp.modules.kdecm.algorithm.ThirdFuncEntity&apos;&#x0D;&#x0A;- Renamed element: &apos;net.chenlin.dp.modules.kdecm.algorithm.ThirdFuncResultEntity&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;ThirdFuncEntity&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src\/main\/java&lt;net.chenlin.dp.modules.kdecm.algorithm{ThirdFuncEntity.java[ThirdFuncEntity" matchStrategy="1" name="ThirdFuncResultEntity" qualified="false" references="true" similarDeclarations="false" stamp="1532251081230" textual="false" version="1.0"/>
+</session>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<style> 
+body{ margin:0; height:100%} 
+html{ height:100%} /*兼容firefox的div高度100%*/ 
+#left{ position:absolute; top:0; left:0; width:200px; height:100%; background-color:#CCCCCC} 
+#right{ margin-left:200px; height:100%; background-color:#0099FF;word-break: break-all; word-wrap:break-word;} 
+</style>
+<body>
+	<div id="dpLTE" class="container-fluid" v-cloak>
+        		<div id="left">
+        			<select id="grouplist" style="width:200px;">
+        			</select>
+        			<input type="button" value="确定" id="btn" onclick="selectGroupToRightDiv()" />
+        		</div> 
+				<div id="right">
+					<h3 id="remindWord"></h3>
+					<select id="ifOpenNess"></select>
+				</div>   			 		
+	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/edit.js}"></script>
+</body>
+</html>

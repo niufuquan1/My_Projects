@@ -152,7 +152,8 @@
 		SELECT
 			`username`,
 			`identity`,
-			`user_id`
+			`user_id`,
+			`user_tr_name`
 		FROM
 			sys_user
 		WHERE

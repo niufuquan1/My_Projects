@@ -1,0 +1,36 @@
+package net.chenlin.dp.modules.kdecm.service;
+
+import java.util.Map;
+
+import net.chenlin.dp.common.entity.Page;
+import net.chenlin.dp.common.entity.R;
+import net.chenlin.dp.modules.kdecm.entity.LiteratureEntity;
+
+/**
+ * 
+ *
+ * @author ZhouChenglin
+ * @email yczclcn@163.com
+ * @url www.chenlintech.com
+ * @date 2018年5月27日 下午8:11:20
+ */
+public interface LiteratureService {
+
+	Page<LiteratureEntity> listLiterature(Map<String, Object> params);
+	
+	Page<LiteratureEntity> literatureShow(Map<String, Object> params);
+	
+	Integer saveLiterature(LiteratureEntity literature);
+	
+	R getLiteratureById(Long id);
+	
+	R updateLiterature(LiteratureEntity literature);
+	
+	R batchRemove(Long[] id);
+	
+	Integer MaxLiteratureID();
+	
+	String FindLiteraturePath(int litertureId);
+	
+	Integer AnalysisWord(String content[])
+}

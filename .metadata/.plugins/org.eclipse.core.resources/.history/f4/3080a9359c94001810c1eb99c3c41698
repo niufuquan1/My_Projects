@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link th:href="@{../../css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/bootstrap.css}" rel="stylesheet"/>
+	<link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/font-awesome.4.6.0.css">
+	<link rel="stylesheet" type="text/css" href="css/doublebox-bootstrap.css" />
+</head>
+<style> 
+body{ margin:0; height:100%} 
+html{ height:100%} /*兼容firefox的div高度100%*/ 
+#left{ position:absolute; top:0; left:0; width:200px; height:100%;} 
+#right{ margin-left:200px; height:100%; background-color:#97CBFF;word-break: break-all; word-wrap:break-word;} 
+</style> 
+<body>
+  	<div id="dpLTE" class="container-fluid" v-cloak>
+  		
+	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/add.js}"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+package net.chenlin.dp.common.utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.poi.POIXMLDocument;
+import org.apache.poi.POIXMLTextExtractor;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+
+public class AnalysisWordUtil {
+	public String[] ReadWord(String filepath) {
+		Map<Integer,String> map = new HashMap<Integer,String>();
+		try {
+			if (filepath.endsWith(".doc")) {
+				InputStream is = new FileInputStream(new File(filepath));
+				WordExtractor ex = new WordExtractor(is);
+				String paraTexts[] = ex.getParagraphText();    
+			      /*for (int i=0; i<paraTexts.length; i++) {    
+			         System.out.println("Paragraph " + (i+1) + " : " + paraTexts[i]);    
+			      } */
+				ex.close();
+			} else {
+				System.out.println("此文件不是后缀为.doc的word文件！");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return paraTexts[];
+	}
+	
+	
+}

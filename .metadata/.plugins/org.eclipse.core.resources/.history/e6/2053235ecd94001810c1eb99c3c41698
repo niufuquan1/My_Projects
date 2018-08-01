@@ -1,0 +1,72 @@
+/**
+ * 新增-js
+ */
+$(function () {
+	getListUserToShow();
+});
+
+var userList = [];
+var userChooses;
+function getListUserToShow() {
+	//alert("in!!");
+	$.ajax({  
+		url:'../../kdecm/group/GetUserList',  
+        type: 'POST',  
+        dataType: 'json',
+        success: function (res) {
+		     var userlist = eval(res);		     
+		     for(var i in userlist)
+		    {
+		    	 if(userlist[i].userId == top.vm.user.userId){
+		    		 //一个逻辑修复，添加的组成员里不应该有创建者，创建者一定是在组里面的
+		    		 continue;
+		    	 }
+		    	 var obj = {
+		    			 "userId":userlist[i].userId,
+		    	 		 "userName":userlist[i].usertrname
+		    	 };
+		    	 userList.push(obj);
+		    }
+		     userChooses = $('.userList').doublebox({
+		         nonSelectedListLabel: '待选批注组成员',
+		         selectedListLabel: '已选批注组成员',
+		         moveOnSelect: false,
+		         nonSelectedList:userList,
+		         selectedList:null,
+		         optionValue:"userId",
+		         optionText:"userName",
+		         doubleMove:true
+		       });
+        },  
+        error: function (msg) {  
+          alert(msg);  
+        }  
+    });
+}
+function sendChoosesToBack(){
+	var userChooses = document.getElementsByName("doublebox");
+	for(var i = 0;i<userlist.length)
+	console.log(t[0].options[0].selected);
+}
+var vm = new Vue({
+	el:'#dpLTE',
+	data: {
+		proGroup: {
+			groupId: 0
+		}
+	},
+	methods : {
+		acceptClick: function() {
+			if (!$('#form').Validform()) {
+		        return false;
+		    }
+		   ({
+		    	url: '../../kdecm/group/save?_' + $.now(),
+		    	param: vm.proGroup,
+		    	success: function(data) {
+		    		$.currentIframe().vm.load();
+		    	}
+		    });
+		}
+	}
+})

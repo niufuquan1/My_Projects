@@ -57,7 +57,7 @@ var vm = new Vue({
 			dialogOpen_({
 				title: '新增',
 				url: 'kdecm/group/add.html?_' + $.now(),
-				width: '600px',
+				width: '950px',
 				height: '500px'
 			});
 			if(res == 1){
@@ -71,12 +71,12 @@ var vm = new Vue({
 				alert("请选择一个批注组进行操作！");
 				return false;
 			}
-			localStorage.setItem("groupId",ck[0].groupId);
+			sessionStorage.setItem("groupId",ck[0].groupId);
 			if(checkedRow(ck)){
 				dialogOpen_({
 					title: '批注组批注属性设置',
 					url: 'kdecm/group/edit1.html?_' + $.now(),
-					width: '600px',
+					width: '950px',
 					height: '500px'
 				});
 				 /*layui.use(['layer'],function () {

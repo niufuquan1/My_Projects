@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link th:href="@{../../css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/font-awesome.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/doublebox-bootstrap.css}" rel="stylesheet"/>
+</head>
+<style>
+  .ue-container {
+	   width: 60%;
+	   margin: 0 auto;
+	   margin-top: 3%;
+	   padding: 20px 40px;
+	   border: 1px solid #ddd;
+	   background: #fff;
+   }
+	</style>
+<body>
+	<!-- 页面结构 -->
+	<div class="ue-container">
+	    <select multiple="multiple" size="10" name="doublebox" class="demo">
+        </select>
+	</div>
+    <!-- 需要引用的JS -->
+    <script th:src="@{/js/kdecm/group/jquery.js}"></script>
+    <script th:src="@{/js/kdecm/group/bootstrap.js}"></script>
+    <script th:src="@{/js/kdecm/group/doublebox-bootstrap.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+		  var demo2 = $('.demo').doublebox({
+          nonSelectedListLabel: '选择角色',
+          selectedListLabel: '授权用户角色',
+          preserveSelectionOnMove: 'moved',
+          moveOnSelect: false,
+          nonSelectedList:[{"roleId":"1","roleName":"zhangsan"},
+        	  {"roleId":"2","roleName":"lisi"},
+        	  {"roleId":"3","roleName":"wangwu"}],
+          selectedList:[{"roleId":"4","roleName":"zhangsan1"},{"roleId":"5","roleName":"lisi1"},{"roleId":"6","roleName":"wangwu1"}],
+          optionValue:"roleId",
+          optionText:"roleName",
+          doubleMove:false,
+        });
+        })
+       
+
+      </script>
+
+  	<div id="dpLTE" class="container-fluid" v-cloak>
+  		
+	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/add.js}"></script>
+</body>
+</html>

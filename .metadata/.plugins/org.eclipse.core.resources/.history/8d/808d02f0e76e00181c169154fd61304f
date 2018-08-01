@@ -1,0 +1,25 @@
+package net.chenlin.dp.modules.kdecm.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import net.chenlin.dp.common.entity.Page;
+import net.chenlin.dp.common.entity.Query;
+import net.chenlin.dp.modules.kdecm.entity.LiteratureObjectEntity;
+import net.chenlin.dp.modules.sys.dao.BaseMapper;
+
+/**
+ * 
+ *
+ * @author ZhouChenglin
+ * @email yczclcn@163.com
+ * @url www.chenlintech.com
+ * @date 2018年5月31日 下午4:41:04
+ */
+@Mapper
+public interface LiteratureObjectMapper extends BaseMapper<LiteratureObjectEntity> {
+	List<LiteratureObjectEntity> listForPage2(Page<LiteratureObjectEntity> page, Query search);
+	
+	//
+}

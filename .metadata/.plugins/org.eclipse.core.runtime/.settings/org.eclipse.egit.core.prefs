@@ -1,0 +1,6 @@
+GitRepositoriesView.GitDirectories=C\:\\My_DevSomething\\KDECM_v1.2\\.git;C\:\\My_DevSomething\\MyWorkSpace\\KDECM\\.git;C\:\\My_DevSomething\\MyWorkSpace\\KDECM_v1.2\\.git;C\:\\My_DevSomething\\MyWorkSpace\\KDECM_v1.1\\.git;C\:\\My_DevSomething\\MyWorkSpace\\.git;E\:\\My_All_Develop\\postil_dev;C\:\\My_DevSomething\\MyWorkSpace\\KDECM_v1.3\\.git;C\:\\My_DevSomething\\MyWorkSpace\\KDECM_v1.0\\.git;C\:\\My_DevSomething\\MyWorkSpace\\KDECM_v1.4\\.git;C\:\\My_DevSomething\\MyWorkSpace\\dp-BOOT\\.git;
+GitRepositoriesView.GitDirectories.relative=C\:\\My_DevSomething\\KDECM_v1.2\\.git;KDECM\\.git;KDECM_v1.2\\.git;KDECM_v1.1\\.git;.git;E\:\\My_All_Develop\\postil_dev;KDECM_v1.3\\.git;KDECM_v1.0\\.git;KDECM_v1.4\\.git;dp-BOOT\\.git;
+core_autoIgnoreDerivedResources=false
+core_defaultRepositoryDir=E\:\\My_All_Develop\\Git
+core_preferredMergeStrategy=jgit-default-mergeStrategy
+eclipse.preferences.version=1

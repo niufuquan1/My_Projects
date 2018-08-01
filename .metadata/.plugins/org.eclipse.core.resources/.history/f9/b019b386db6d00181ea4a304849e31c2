@@ -1,0 +1,340 @@
+package com.spasvo.jacob;
+import com.jacob.activeX.ActiveXComponent;
+import com.jacob.com.Dispatch;
+import com.jacob.com.Variant;
+/**
+ * （1）将jacob-1.18-x64.dll 放在jdk的bin路径下（dll和jar要配套 ），jdk要配置环境变量
+ * （2）安装microsoft office word(如果没装office 用wps 可能这段代码不会运行)（当前是word2007 :网上下的输入密钥就好了）
+ * （3）dll和jar要和操作系统匹配（当前是win7 64位）
+ * （4）还要匹配的jdk 64 位(当前是jdk1.7.0_80)
+ * （5）jacob.jar 在lib中
+ * （6）resource文件夹是为了保存资源的项目并不需要
+ * @author Administrator
+ *
+ */
+public class AnalysWord {
+
+	Dispatch hyperLinks = null;// 所有超链接（目录区域超链接，因为目录也是超链接）
+
+	// word文档  
+    private Dispatch doc;  
+    // word运行程序对象  
+    private ActiveXComponent word;  
+    
+    // 选定的范围（一块区域）或光标所在的位置（一个点）  
+    private Dispatch selection; 
+
+    // 所有word文档集合  
+    private Dispatch documents;  
+    private boolean saveOnExit = true;  
+    //文档内容最后的位置
+    private int theLastPosition=0;
+    //自定义类有属性：start(int)  ，end(int )
+    private HeadPosition position=	new HeadPosition();
+	
+	
+	/**
+	 * 得到目录并通过目录找出对应的标题，
+	 * 通过两个标题的位置得到之间的段落
+	 * （得到了段落Range，复制到新建的文档中，）
+	 * 从而将一个大文档按目录拆分为了一个个小文档
+	 * @param filePath
+	 * @return
+	 */
+	public void getDocumet(String filePath) {
+		//启动word
+		initWordApplication(false);
+		//打开相应文档
+		openDocumentByInvoke(filePath);
+		// 文档内容最后的位置
+		theLastPosition = Dispatch.call(selection, "EndKey", new Variant(6)).getInt();
+		// 整个目录区域
+		Dispatch tablesOfContents = Dispatch.call(doc, "TablesOfContents")
+				.toDispatch();
+		
+		// 整个目录
+		Dispatch tableOfContents = Dispatch.call(tablesOfContents, "Item",
+				new Variant(1)).toDispatch();
+	
+		// 拿到整个目录的范围
+		Dispatch tableOfContentsRange = Dispatch.get(tableOfContents, "Range")
+				.toDispatch();
+		// 得到选中内容中的超链接（目录就是超链接）
+		hyperLinks = Dispatch.get(tableOfContentsRange, "HyperLinks")
+				.toDispatch();
+		// 得到超链接的个数
+		int hyperLinksCount = Dispatch.get(hyperLinks, "Count").getInt();
+		System.out.println("hyperLinksCount==="+hyperLinksCount);
+		if(hyperLinksCount==0){
+			return ;
+		}
+		int startOne = 0, endOne = 0, startTwo = 0;
+		//目录对应的标题所在的区域（只是标题自身的区域，不包含标题间的内容区域）
+		Dispatch headingRange = null;
+		// 标题及其与下一个标题间的区域
+		Dispatch selectRange = null;
+		
+		System.out.println("hyperLinksCount==="+hyperLinksCount);
+		//自定义的类（保存selection的首位位置start，end）
+		for (int k = 1, j = 0; k < hyperLinksCount+1; k++) {//链接的序号从1开始
+			getHeadPosition(k);
+			startOne =position.getStart();//标题开始位置
+			endOne = position.getEnd();//标题结束位置
+			// 标题范围
+			headingRange = Dispatch.call(doc, "Range",
+					new Variant(startOne), new Variant(endOne)).toDispatch();
+			// 保存标题
+//			headings.add(Dispatch.get(headingRange, "Text").toString());
+			//下个标题
+			j = k + 1;
+			
+			if(j==hyperLinksCount+1){//此时为最后一个标题了，要取标题与文档最后位置间的区域
+				System.out.println("startOne====="+startOne+"====two===="+theLastPosition);
+				selectRange = Dispatch.call(doc, "Range", new Variant(startOne),
+						new Variant(theLastPosition)).toDispatch();
+			}else{//正常的获得区域
+				getHeadPosition(j);
+				startTwo = position.getStart(); 
+				// 标题及其下段落范围（该标题开始位置与下一个标题的起始位置）
+				selectRange = Dispatch.call(doc, "Range", new Variant(startOne),
+						new Variant(startTwo)).toDispatch();
+			}
+			//把获得的区域复制到剪贴板，并创建一个新的文档黏贴进去，就实现了拆分文档的目的（区域中的图片，表格，文字全都会复制）
+			createDoc(selectRange,headingRange);
+		}
+	}
+ 
+	
+	
+	
+	/**
+	 * 得到该目录对应标题的首尾位置
+	 * @param index
+	 * @return
+	 */
+	public HeadPosition getHeadPosition(int index) {
+		Dispatch hyperLink = Dispatch.call(hyperLinks, "Item",
+				new Variant(index)).toDispatch();
+		//让selection跳转到目录对应的标题
+		Dispatch.call(hyperLink, "Follow");
+		
+		try {
+			//此时selection是一块区域
+			selection = Dispatch.get(word, "Selection").toDispatch();
+			position.setStart(Dispatch.get(selection, "Start").getInt());
+			position.setEnd(Dispatch.get(selection, "End").getInt());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return position;
+	}
+	
+
+    /**
+     * 启动word
+     * @param visible
+     */
+    public void initWordApplication(boolean visible){
+    	 if (word == null) {  
+             word = new ActiveXComponent("Word.Application");  
+             word.setProperty("Visible", new Variant(visible)); // 不可见打开word  
+//             word.setProperty("AutomationSecurity", new Variant(3)); // 禁用宏  
+         }  
+         if (documents == null)  
+             documents = word.getProperty("Documents").toDispatch();  
+    }
+
+  
+    /** 
+     * 创建一个新的word文档 
+     *  
+     */  
+    public void createNewDocument() {  
+        doc = Dispatch.call(documents, "Add").toDispatch();  
+        selection = Dispatch.get(word, "Selection").toDispatch();  
+    }  
+  
+    /** 
+     * 打开一个已存在的文档 
+     *  
+     * @param docPath 
+     */  
+    public void openDocumentByCall(String docPath) {  
+        closeDocument();  
+        doc = Dispatch.call(documents, "Open", docPath).toDispatch();  
+        selection = Dispatch.get(word, "Selection").toDispatch();  
+    }  
+  
+    /** 
+     * 打开一个保护文档, 
+     *  
+     * @param docPath 
+     *            -文件全名 
+     * @param pwd 
+     *            -密码 
+     */  
+    public void openDocumentOnlyRead(String docPath, String pwd)  
+            throws Exception {  
+        closeDocument();  
+        doc = Dispatch.callN(  
+                documents,  
+                "Open",  
+                new Object[] { docPath, new Variant(false), new Variant(true),  
+                        new Variant(true), pwd, "", new Variant(false) })  
+                .toDispatch();  
+        selection = Dispatch.get(word, "Selection").toDispatch();  
+    }  
+  
+    public void openDocumentByCallN(String docPath, String pwd) throws Exception {  
+        closeDocument();  
+        doc = Dispatch.callN(  
+                documents,  
+                "Open",  
+                new Object[] { docPath, new Variant(false), new Variant(false),  
+                        new Variant(true), pwd }).toDispatch();  
+        selection = Dispatch.get(word, "Selection").toDispatch();  
+    }  
+  
+    public void openDocumentByInvoke(String filePath)throws Exception{
+    	// 打开的word文本
+		doc = Dispatch
+				.invoke(
+						documents,
+						"Open",
+						Dispatch.Method,
+						new Object[] { filePath, new Variant(false),
+								new Variant(false) }, new int[1]).toDispatch();
+		 selection = Dispatch.get(word, "Selection").toDispatch();  
+    }
+   
+  
+    /** 
+     * 文件保存或另存为 
+     *  
+     * @param savePath 
+     *            保存或另存为路径 
+     */  
+    public void save(String savePath) {  
+        Dispatch.call(Dispatch.call(word, "WordBasic").getDispatch(),  
+                "FileSaveAs", savePath);  
+    }  
+  
+    /**
+     * WORD_HTML = 8,WORD_TXT = 7, EXCEL_HTML = 44
+     * @param doc
+     * @param savePath
+     */
+    public void saveHtml(Dispatch doc ,String savePath){
+    	Dispatch.invoke(doc, "SaveAs", Dispatch.Method, new Object[] {
+    			savePath, new Variant(8) }, new int[1]);
+    }
+    /** 
+     * 文件保存为html格式 
+     *  
+     * @param savePath 
+     * @param htmlPath 
+     */  
+    public void saveAsHtml(String htmlPath) {  
+        Dispatch.invoke(doc, "SaveAs", Dispatch.Method, new Object[] {  
+                htmlPath, new Variant(8) }, new int[1]);  
+    }  
+  
+    /** 
+     * 关闭文档 
+     *  
+     * @param val 
+     *            0不保存修改 -1 保存修改 -2 提示是否保存修改 
+     */  
+    public void closeDocument(int val) {  
+        Dispatch.call(doc, "Close", new Variant(val));  
+        doc = null;  
+    }  
+  
+    /** 
+     * 关闭当前word文档 
+     *  
+     */  
+    public void closeDocument() {  
+        if (doc != null) {  
+            Dispatch.call(doc, "Save");  
+            Dispatch.call(doc, "Close", new Variant(saveOnExit));  
+            doc = null;  
+        }  
+    }  
+  
+    public void closeDocumentWithoutSave() {  
+        if (doc != null) {  
+            Dispatch.call(doc, "Close", new Variant(false));  
+            doc = null;  
+        }  
+    }  
+  
+    /** 
+     * 关闭全部应用 
+     *  
+     */  
+    public void close() {  
+        // closeDocument();  
+        if (word != null) {  
+            Dispatch.call(word, "Quit");  
+            word = null;  
+        }  
+        selection = null;  
+        documents = null;  
+    }  
+  
+    /** 
+     * 打印当前word文档 
+     *  
+     */  
+    public void printFile() {  
+        if (doc != null) {  
+            Dispatch.call(doc, "PrintOut");  
+        }  
+    }  
+  
+  
+	
+	
+	public void createDoc( Dispatch range ,Dispatch headingRange){
+			//新建文档
+		 	 Dispatch doc = Dispatch.call(documents, "Add").toDispatch(); 
+		 	 //获得新建文档的selection
+	         Dispatch selection = Dispatch.get(word, "Selection").toDispatch();
+	         //selection移动到文档首位置
+	         Dispatch.call(selection, "HomeKey", new Variant(6));
+	         //获得该selection的range
+	         Dispatch textRange = Dispatch.get(selection, "Range").toDispatch();  
+	         //复制上个文档取得区域
+	         Dispatch.call(range, "Copy");  
+	         //粘贴到当前文档的range中
+	         Dispatch.call(textRange, "Paste");
+	       //取消选中,应该就是移动光标，否则新添加的内容会覆盖选中的内容
+//	         Dispatch.call(selection,"MoveRight",new Variant(1),new Variant(1));
+	         //保存新文档
+	         save("D:\\test\\"+Dispatch.get(headingRange, "Text").toString()+".docx");
+	         //另存为html
+	         saveHtml(doc,"D:\\test\\"+Dispatch.get(headingRange, "Text").toString()+".html");
+	         //关闭当前新建的文档
+	         Dispatch.call(doc, "Close", new Variant(true));// 是否保存修改      
+	}
+
+	
+	public static void main(String[] args) {
+		String filePath ="E:\\my\\公司文档\\啦啦啦啦.docx";
+		AnalysWord analysWord;
+		try {
+			analysWord = new AnalysWord();
+			analysWord.getDocumet(filePath);
+//			analysWord.testSplitWord(filePath);
+			//关闭当前打开的文档
+			analysWord.closeDocumentWithoutSave();
+			//关闭word
+			analysWord.close();
+	        
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

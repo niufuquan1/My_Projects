@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link th:href="@{../../css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/font-awesome.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/doublebox-bootstrap.css}" rel="stylesheet"/>
+</head>
+<style>
+  .ue-container {
+	   width: 60%;
+	   margin: 0 auto;
+	   margin-top: 3%;
+	   padding: 20px 40px;
+	   border: 1px solid #ddd;
+	   background: #fff;
+   }
+	</style>
+<body>
+  	<div id="dpLTE" class="ue-container" v-cloak>
+  		<input type="text" class="form-control" id="groupName" placeholder="请输入您所需要修改的组名称"/>
+  		<select multiple="multiple" size="10" name="doublebox" class="userList">
+        </select>
+     </div>
+     <div style="center">
+        	<button class="btn btn-primary" onclick="sendChoosesToBack()" >确定添加</button>
+        </div>
+	    <!-- 需要引用的JS -->
+    <script th:src="@{/js/kdecm/group/jquery.js}"></script>
+    <script th:src="@{/js/kdecm/group/bootstrap.js}"></script>
+    <script th:src="@{/js/kdecm/group/doublebox-bootstrap.js}"></script>
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/add.js}"></script>
+</body>
+</html>

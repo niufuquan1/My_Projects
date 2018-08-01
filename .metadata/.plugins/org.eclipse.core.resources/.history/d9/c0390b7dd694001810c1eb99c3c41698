@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link th:href="@{../../css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/font-awesome.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/doublebox-bootstrap.css}" rel="stylesheet"/>
+</head>
+<style> 
+#left{ position:absolute; top:0; left:0; width:200px;} 
+#right{margin-left:200px; height:100%; word-break: break-all; word-wrap:break-word;background-color:#97CBFF} 
+ .ue-container {
+	   width: 60%;
+	   margin: 0 auto;
+	   margin-top: 3%;
+	   padding: 20px 40px;
+	   border: 1px solid #ddd;
+	   background: #fff;
+   }
+</style>
+<body>  
+	<div id="dpLTE" class="container-fluid" style="text-align:center">	
+	<div style="overflow: auto; height: 340px; width: 800px;">
+	<table class="table table-condensed" >
+		  <caption  style="text-align:center">本组成员表</caption>
+		  <thead>
+		    <tr>
+		      <th>成员用户名</th>
+		      <th>成员类型</th>
+		    </tr>
+		  </thead>
+		  <tbody id="groupUser"></tbody>
+		</table>
+		<br/>
+	<input type="button" class="btn" value="修改批注组批注属性" id="btn" onclick="showGroupProperty()" />&nbsp;&nbsp;
+	<input type="button" value="搜索用户" id="SearchBtn" class="btn .btn-large" onclick="SearchUser()"/>&nbsp;&nbsp;
+	<input type="button" value="继续添加组成员" id="addBtn" class="btn .btn-large" onclick="addGroupMoveOn()"/>&nbsp;&nbsp;
+	<input type="button" value="删除组成员" id="delBtn" class="btn .btn-large" onclick="delGroupMoveOn()"/>&nbsp;&nbsp;
+	<input type="button" value="修改组名" id="nameBtn" class="btn .btn-large" onclick="modifyGroupName()"/>
+	<br/>
+	</div>
+	
+		
+	</div>
+	<br/>
+	<div id = "modifyGroupName" class="row">
+		<div class="col-lg-6">
+			<div class="input-group">
+			 <input type="text" class="form-control" id="groupName" placeholder="请输入您所需要修改的组名称"/><span class="input-group-btn">
+	        <button id="btn" class="btn btn-default" type="button" onclick="ChangeGroupName()">Go!</button></span><span class="input-group-btn">
+	        <button class="btn btn-default" type="button" onclick="goback()">返回</button></span>
+			 </div>
+		</div>
+	</div>
+	<div id ="SearchUser" class="row">
+		<div class="col-lg-6">
+			 <div class="input-group">
+			 <input type="text" class="form-control" id="Search" placeholder="请输入您所需要搜索的用户名或真实姓名"/><span class="input-group-btn">
+	        <button id="SearchUserBtn" class="btn btn-default" type="button" onclick="SearchUserBtn()">Go!</button></span><span class="input-group-btn">
+	        <button class="btn btn-default" type="button" onclick="goback()">返回</button></span>
+	        
+			 </div>
+		<div id = "SearchResult" >
+		<table class="table table-condensed" id="SearchResultTable">
+		  <caption  style="text-align:center">搜索结果</caption>
+		  <thead>
+		    <tr>
+		      <th>成员用户名</th>
+		      <th>成员名称</th>
+		    </tr>
+		  </thead>
+		  <tbody id="UserResult"></tbody>
+		</table>
+		</div>
+	  </div>
+	</div>
+	
+	<div id="AddOrDel">
+		<select multiple="multiple" size="10" name="doublebox" class="userList"></select>
+	</div>	
+	<div id="changeGroupPropery">
+		<div class="col-lg-6">
+			<div class="input-group">
+			 <select id="IfOpenNess" class="form-control input-lg">
+        						<option value="0">不公开</option>
+        						<option value="1">公开</option>
+        	</select><span class="input-group-btn">
+	        <button id="btn" class="btn btn-default" type="button" onclick="ChangeGroupProperty()">Go!</button></span><span class="input-group-btn">
+	        <button class="btn btn-default" type="button" onclick="goback()">返回</button></span>
+			 </div>
+		</div>
+		
+	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/edit.js}"></script>
+
+</body>
+</html>

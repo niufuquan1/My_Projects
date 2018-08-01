@@ -1,0 +1,99 @@
+/**
+ * js
+ */
+
+$(function () {
+	initialPage();
+	getGrid();
+});
+
+function initialPage() {
+	$(window).resize(function() {
+		$('#dataGrid').bootstrapTable('resetView', {height: $(window).height()-56});
+	});
+}
+
+function getGrid() {
+	$('#dataGrid').bootstrapTableEx({
+		url: '../../kdecm/group/list?_' + $.now(),
+		height: $(window).height()-56,
+		queryParams: function(params){
+			params.name = vm.keyword;
+			params.userid = top.vm.user.userId;
+			return params;
+		},
+		columns: [
+			{checkbox: true},
+			{field : "groupId", title : "批注组ID", width : "100px"}, 
+			{field : "groupName", title : "批注组名称", width : "100px"}, 
+			{field : "userId", title : "创建者ID", width : "100px"},
+			{field : "ifopenness", title : "批注是否公开", width : "100px"}
+		],
+		onLoadSuccess:function(data){
+			var i;
+			console.log(data);
+			for(i=0;i<data.rows.length;i++){
+				alert(data.rows[i].ifopenness);
+				if(data.rows[i].ifopenness == 0){
+					data.rows[i].ifopenness = "不公开";
+					//alert(data.rows[i].ifopenness);
+            	}else if(data.rows[i].ifopenness == 1){
+            		data.rows[i].ifopenness = "公开";
+            		//alert(data.rows[i].ifopenness);
+            	}
+			}
+			//console.log(data);
+			$("#dataGrid").bootstrapTable("load",data);
+        }
+	})
+}
+
+var vm = new Vue({
+	el:'#dpLTE',
+	data: {
+		keyword: null
+	},
+	methods : {
+		load: function() {
+			$('#dataGrid').bootstrapTable('refresh');
+		},
+		save: function() {
+			dialogOpen({
+				title: '新增',
+				url: 'kdecm/group/add.html?_' + $.now(),
+				width: '600px',
+				height: '500px',
+				yes : function(iframeId) {
+					top.frames[iframeId].vm.acceptClick();
+				},
+			});
+		},
+		edit: function() {
+			var ck = $('#dataGrid').bootstrapTable('getSelections');
+			localStorage.setItem("groupId",ck[0].groupId);
+			if(checkedRow(ck)){
+				dialogOpen({
+					title: '批注组属性设置',
+					url: 'kdecm/group/edit.html?_' + $.now(),
+					width: '350px',
+					height: '110px'
+				});
+			}
+		},
+		remove: function() {
+			var ck = $('#dataGrid').bootstrapTable('getSelections'), ids = [];	
+			if(checkedArray(ck)){
+				$.each(ck, function(idx, item){
+					ids[idx] = item.groupId;
+				});
+				$.RemoveForm({
+					url: '../../kdecm/group/remove?_' + $.now(),
+			    	param: ids,
+			    	success: function(data) {
+			    		vm.load();
+			    	}
+				});
+			}
+		}
+	}
+})

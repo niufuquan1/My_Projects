@@ -1,0 +1,2 @@
+2018-05-25 14:53:32,950 0      [      Worker-45] WARN  re.templates.TemplateProcessor  - May have failed to replace token 		//window.ide 'dummy'. Replaced/injected later by STS browser integration.
+2018-05-25 14:53:32,963 13     [      Worker-45] WARN  re.templates.TemplateProcessor  - May have failed to replace token 		//The dummy helps preview/test the page in an external browser.

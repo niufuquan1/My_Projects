@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:include="include/header_css::header('')"></head>
+<head th:include="include/header_css::header('')">
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link th:href="@{../../css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/font-awesome.css}" rel="stylesheet"/>
+    <link th:href="@{../../css/doublebox-bootstrap.css}" rel="stylesheet"/>
+</head>
 <style> 
-#left{ position:absolute; top:0; left:0; width:200px;} 
-#right{margin-left:200px; height:100%; word-break: break-all; word-wrap:break-word;background-color:#97CBFF} 
+ .ue-container {
+	   width: 60%;
+	   margin: 0 auto;
+	   margin-top: 3%;
+	   padding: 20px 40px;
+	   border: 1px solid #ddd;
+	   background: #fff;
+   }
 </style>
 <body>  
-	<div id="dpLTE" class="container-fluid" v-cloak >
-        	请选择组内批注是否公开:<select id="IfOpenNess">
-        						<option value="0">不公开</option>
-        						<option value="1">公开</option>
-        					</select>	
-        	<input type="button" class="btn" value="确定" id="btn" onclick="ChangeGroupProperty()" />	<br>		 		
-	<br/>
-	<input type="button" value="搜索用户" id="SearchBtn" class="btn .btn-large" onclick="SearchUser()"/>&nbsp;
-	<input type="button" value="继续添加组成员" id="addBtn" class="btn .btn-large" onclick="addGroupMoveOn()"/>&nbsp;
-	<input type="button" value="删除组成员" id="delBtn" class="btn .btn-large" onclick="delGroupMoveOn()"/>&nbsp;
-	<input type="button" value="修改组名" id="nameBtn" class="btn .btn-large" onclick="modifyGroupName()"/>
-	<br/>
-	<div style="overflow: auto; height: 340px; width: 575px;">
+	<div id="AddOrDel" class="ue-container">
+		<select multiple="multiple" size="10" name="doublebox" class="userList"></select>
+		<div style=" text-align:center">
+        	<button id="addOrDelBtn" class="btn btn-primary" onclick="sendChoosesToBack()" >确定上述操作</button>&nbsp;&nbsp;<input type="button" class="btn btn-primary" value="返回" onclick="goback()"/>
+     	</div>	
+	</div>
+	<div id="dpLTE" class="container-fluid" style="text-align:center">	
+	<div style="overflow: auto; height: 400px; width: 930px;">
 	<table class="table table-condensed" >
 		  <caption  style="text-align:center">本组成员表</caption>
 		  <thead>
@@ -30,7 +39,13 @@
 		  <tbody id="groupUser"></tbody>
 		</table>
 	</div>
-	
+	<br/>
+	<input type="button" class="btn" value="修改批注组批注属性" id="btn" onclick="showGroupProperty()" />&nbsp;&nbsp;
+	<input type="button" value="搜索用户" id="SearchBtn" class="btn .btn-large" onclick="SearchUser()"/>&nbsp;&nbsp;
+	<input type="button" value="继续添加组成员" id="addBtn" class="btn .btn-large" onclick="addGroupMoveOn()"/>&nbsp;&nbsp;
+	<input type="button" value="删除组成员" id="delBtn" class="btn .btn-large" onclick="delGroupMoveOn()"/>&nbsp;&nbsp;
+	<input type="button" value="修改组名" id="nameBtn" class="btn .btn-large" onclick="modifyGroupName()"/>
+	<br/>
 		
 	</div>
 	<br/>
@@ -66,18 +81,21 @@
 	  </div>
 	</div>
 	
-	<div id="AddOrDel">
-		<div id="left">
-			<select id="List" multiple="multiple" style="width:200px;height:390px"></select>
-        	<input type="button" value="确定以上人选" class="btn btn-large" id="btn_" onclick="selectGroupUserToRightDiv()"/>
-			<input type="button" class="btn" value="返回" onclick="goback()"/>
-		</div>
-		<div id="right">
-			<h3 id="remindWord"></h3>
-			<ol id="choiceUser"></ol>
-		</div>
-	</div>	
 	
+	
+	<div id="changeGroupPropery">
+		<div class="col-lg-6">
+			<div class="input-group">
+			 <select id="IfOpenNess" class="form-control input-lg">
+        						<option value="0">不公开</option>
+        						<option value="1">公开</option>
+        	</select><span class="input-group-btn">
+	        <button id="btn" class="btn btn-default" type="button" onclick="ChangeGroupProperty()">Go!</button></span><span class="input-group-btn">
+	        <button class="btn btn-default" type="button" onclick="goback()">返回</button></span>
+			 </div>
+		</div>
+		
+	</div>
 	
 	<div th:include="include/footer_js::footer"></div>
 	<script th:src="@{/js/common.js}"></script>

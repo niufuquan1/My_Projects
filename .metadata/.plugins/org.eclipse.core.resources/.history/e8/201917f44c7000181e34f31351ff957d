@@ -1,0 +1,12 @@
+package net.chenlin.dp.common.utils;
+
+import java.util.Map;
+
+public class AnalysisWordUtil {
+
+	public Map<Intager,String> ReadWord() {
+		return ;
+	}
+	
+	
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id="dpLTE" class="container-fluid" v-cloak>
+        	请选择组内批注是否公开:<select id="IfOpenNess"></select>				 		
+	</div>
+	
+	<div class="hiddenArea" id="hiddenArea">
+  		<input type="hidden" class="currentUserId" v-model="userId" />
+  	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/edit.js}"></script>
+	<script type="text/javascript">
+	var vm = new Vue({
+		el:'#hiddenArea',
+		data: {
+			userId : top.vm.user.userId
+		}
+	})
+  </script>
+</body>
+</html>

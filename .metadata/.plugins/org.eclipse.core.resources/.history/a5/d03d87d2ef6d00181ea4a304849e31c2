@@ -1,0 +1,145 @@
+/**
+ * 编辑-js
+ */
+$(function () {
+	findGroupIdList();
+});
+
+function findGroupIdList(){
+	$.ajax({  
+		url:'../../kdecm/group/findGroupIdList',  
+        type: 'POST',  
+        data:{userid:top.vm.user.userId},
+        dataType: 'json',
+        success: function (res) {
+            console.log(res);
+		     var grouplist = eval(res);
+		     for(var i in grouplist)
+		    {
+		    	 var objSelect=document.getElementById("grouplist");  
+		    	 objSelect.options.add( new Option(grouplist[i].groupname, grouplist[i].groupId));
+		    }
+        },  
+        error: function (msg) {  
+          alert(msg);  
+        }  
+    });
+}
+function selectGroupToRightDiv(){
+	document.getElementById("btn").disabled=true;
+	var select = document.getElementById("grouplist");
+	var div = document.getElementById("right");      
+    var text = document.getElementById("remindWord");
+    var btn1 = document.createElement("button");//向后台传送传递数据
+    var btn2 = document.createElement("button");//取消向后台传送的数据
+    var op1 = document.createElement("option");
+    var op2 = document.createElement("option");
+    var groupId;
+    var groupName;
+    for(i=0;i<select.length;i++){
+        if(select.options[i].selected){
+        	groupId = select[i].value;
+        	groupName = select.options[i].text;
+        	break;
+        }
+    }      
+    text.innerHTML="您选择的批注组组名为："+groupName+"对应组ID为："+groupId;
+    //接下来让创建者对组的批注公开属性进行设置
+    op1.setAttribute("value",0);                 // 设置OPTION的 VALUE
+    op1.appendChild(document.createTextNode("不公开")); // 设置OPTION的 TEXT
+    op2.setAttribute("value",1);
+    op2.appendChild(document.createTextNode("公开"));
+    document.getElementById("ifOpenNess").appendChild(op1);
+    document.getElementById("ifOpenNess").appendChild(op2);
+    //接下来对按钮btn1相关属性进行设置
+    btn1.innerHTML = '确定修改';
+    btn1.onclick = function () {  //该方法为向后台传入信息，并进行数据持久化操作方法    
+    	$.ajax({
+    		url:'../../kdecm/group/ChangeGroupProperty',
+    		type: 'POST',  
+    		data:
+    			{
+    				openNess:openNessProperty
+    			},
+    		dataType:'text',
+    		success:function(res){
+    			console.log(res);
+    			if(res == 1){
+    				alert('批注组创建成功!');
+    				location.replace(location.href);
+    			}else{
+    				alert('批注组创建失败');
+    				location.reload();
+    			}
+    		}
+    	})
+    }
+    div.appendChild(btn1); 
+    
+    //接下来对按钮btn2相关属性进行设置
+    btn2.innerHTML = '取消创建';
+    btn2.onclick = function(){
+    	location.reload();//自动刷新当前界面        
+    }
+    div.appendChild(btn2);
+}
+
+function ChangeGroupProperty(){
+	var openNessSelect = document.getElementById("ifOpenNess");
+	var	openNessProperty;
+	for(i=0;i<2;i++){
+        if(openNessSelect.options[i].selected){
+        	openNessProperty = openNessSelect.options[i];
+        }
+    }  
+	$.ajax({
+		url:'../../kdecm/group/ChangeGroupProperty',
+		type: 'POST',  
+        dataType: 'json',
+        data:{openNess:openNessProperty},
+        dataType:'text',
+        success:function(res){
+        	console.log(res);
+        	if(res==1){
+        		alert("批注组批注权限修改成功!");
+        		location.replace(location.href);
+        	}else{
+        		alert("批注组批注权限修改失败，请联系管理员进行系统修复!");
+        		location.reload();
+        	}
+        }
+	})
+}
+
+
+var vm = new Vue({
+	el:'#dpLTE',
+	data: {
+		proGroup: {
+			groupId: 0
+		}
+	},
+	methods : {
+		setForm: function() {
+			$.SetForm({
+				url: '../../kdecm/group/info?_' + $.now(),
+		    	param: vm.proGroup.groupId,
+		    	success: function(data) {
+		    		vm.proGroup = data;
+		    	}
+			});
+		},
+		acceptClick: function() {
+			if (!$('#form').Validform()) {
+		        return false;
+		    }
+		    $.ConfirmForm({
+		    	url: '../../kdecm/group/update?_' + $.now(),
+		    	param: vm.proGroup,
+		    	success: function(data) {
+		    		$.currentIframe().vm.load();
+		    	}
+		    });
+		}
+	}
+})

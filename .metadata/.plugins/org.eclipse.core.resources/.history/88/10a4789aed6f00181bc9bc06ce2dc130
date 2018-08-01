@@ -1,0 +1,10 @@
+package net.chenlin.dp.common.utils;
+
+public class AnalysisWordUtil {
+
+	public Map<int,String> ReadWord() {
+		return "";
+	}
+	
+	
+}

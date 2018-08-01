@@ -1,0 +1,62 @@
+/**
+ * 编辑-js
+ */
+
+function ChangeGroupProperty(){
+	var groupId = localStorage.getItem("groupId");
+	var options=$("#IfOpenNess	 option:selected"); 
+	console.log(options.val());
+	//console.log($('#IfOpenNess option:selected') .val());
+	var options=$("#IfOpenNess	 option:selected"); 
+	$.ajax({
+		url:'../../kdecm/group/ChangeGroupProperty',  
+        type: 'POST',  
+        dataType: 'json',
+		data:{
+			  groupId:groupId,
+			  openNess:options.val()
+			  },
+		success:function(res){
+			if(res == 1){
+				alert("修改成功!");
+				$.currentIframe().vm.load();
+				location.replace(location.href);
+			}else{
+				alert("修改失败，请联系管理员!");
+				location.reload();
+			}
+		}
+	})
+}
+
+var vm = new Vue({
+	el:'#dpLTE',
+	data: {
+		proGroup: {
+			groupId: 0
+		}
+	},
+	methods : {
+		setForm: function() {
+			$.SetForm({
+				url: '../../kdecm/group/info?_' + $.now(),
+		    	param: vm.group.groupId,
+		    	success: function(data) {
+		    		vm.group = data;
+		    	}
+			});
+		},
+		acceptClick: function() {
+			if (!$('#form').Validform()) {
+		        return false;
+		    }
+		    $.ConfirmForm({
+		    	url: '../../kdecm/literature/update?_' + $.now(),
+		    	param: vm.literature,
+		    	success: function(data) {
+		    		$.currentIframe().vm.load();
+		    	}
+		    });
+		}
+	}
+})

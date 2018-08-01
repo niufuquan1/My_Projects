@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id="dpLTE" class="container-fluid" v-cloak>
+        		<div id="left">
+        			<!--<input type="button" @click="get()" value="点击" />  -->
+        			<select id="userlist" multiple="multiple" style="width:200px;">
+        			</select>
+        			<input type="button" value="确定" id="btn" onclick="ChangeGroupOpenNess()" />
+        		</div> 
+				<div id="right">
+					<h3 id="remindWord"></h3>
+					<ol id="choiceUser"></ol>
+				</div> 
+        		
+	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/edit.js}"></script>
+</body>
+</html>

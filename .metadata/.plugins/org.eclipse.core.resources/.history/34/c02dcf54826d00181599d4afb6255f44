@@ -1,0 +1,219 @@
+package net.chenlin.dp.common.utils;
+
+import java.util.Vector;
+
+import com.jacob.activeX.ActiveXComponent;
+import com.jacob.com.Dispatch;
+import com.jacob.com.Variant;
+
+public class AnalysWord {
+	Dispatch selection = null;// 光标所在
+	Dispatch hyperLinks = null;// 所有超链接（目录区域超链接，因为目录也是超链接）
+	Dispatch wordFile = null;// 一个word文档
+	ActiveXComponent word = null;// word组件
+	protected static Integer max = 0;//目录的最大等级
+	protected Vector<Integer> headList = new Vector();//用来保存目录的等级
+	public void CloseWord() {
+		Dispatch.call(wordFile, "Close", new Variant(false));// 是否保存修改
+		Dispatch.call(word, "Quit");
+	}
+	/**
+	 * 得到目录并通过目录找出对应的标题，
+	 * 通过两个标题的位置得到之间的段落
+	 * （得到了段落Range，但是我只处理了text,没有处理table和picture，可以从Range中取出）
+	 * @param filePath
+	 * @return
+	 */
+	public Vector getDocumet(String filePath) {// 通过目录获取对应的段落
+		word = new ActiveXComponent("Word.Application");
+		word.setProperty("Visible", new Variant(false));
+		Dispatch documents = word.getProperty("Documents").toDispatch();
+		// 打开的word文本
+		wordFile = Dispatch
+				.invoke(
+						documents,
+						"Open",
+						Dispatch.Method,
+						new Object[] { filePath, new Variant(false),
+								new Variant(false) }, new int[1]).toDispatch();
+		Dispatch tablesOfContents = Dispatch.call(wordFile, "TablesOfContents")
+				.toDispatch();// 整个目录区域
+		
+		// 整个目录
+		Dispatch tableOfContents = Dispatch.call(tablesOfContents, "Item",
+				new Variant(1)).toDispatch();
+	
+		// 拿到整个目录的范围
+		Dispatch tableOfContentsRange = Dispatch.get(tableOfContents, "Range")
+				.toDispatch();
+		// 得到选中内容中的超链接
+		hyperLinks = Dispatch.get(tableOfContentsRange, "HyperLinks")
+				.toDispatch();
+		// 得到超链接的个数
+		int hyperLinksCount = Dispatch.get(hyperLinks, "Count").getInt();
+		if(hyperLinksCount==0){
+			return null;
+		}
+		int startOne = 0, endOne = 0, startTwo = 0, endTwo = 0;
+		Dispatch headingRange = null;
+		Dispatch selectRange = null;// 标题下段落范围
+		Vector<String> headings = new Vector<String>();
+		Vector<String> paras = new Vector<String>();
+		Integer one = 0;
+		Dispatch paragraphs ;
+		// -----每一段内容不带标题
+		for (int k = 1, j = 0; k < hyperLinksCount; k++) {
+			startOne = getParaStart(k);
+			endOne = getParaEnd(k);
+			j = k + 1;
+			startTwo = getParaStart(j);
+			endTwo = getParaEnd(j);
+			// 标题范围
+			headingRange = Dispatch.call(wordFile, "Range",
+					new Variant(startOne), new Variant(endOne)).toDispatch();
+			paragraphs = Dispatch.get(headingRange, "Paragraphs")
+			.toDispatch();
+			one = Dispatch.get(paragraphs, "OutlineLevel").getInt();
+			if (one >= max) {
+				max = one;
+			}
+			headList.add(one);
+			// 保存标题
+			headings.add(Dispatch.get(headingRange, "Text").toString());
+			// 标题下段落范围（该标题最后位置与下一个标题的起始位置）
+			selectRange = Dispatch.call(wordFile, "Range", new Variant(endOne),
+					new Variant(startTwo)).toDispatch();
+			// 保存段落（文字）没有处理table、picture
+			paras.add(Dispatch.get(selectRange, "Text").toString());
+		}
+
+		// ------------最后一段内容不带标题---------//
+		// 最后一个标题
+		headingRange = Dispatch.call(wordFile, "Range", new Variant(startTwo),
+				new Variant(endTwo)).toDispatch();
+		paragraphs = Dispatch.get(headingRange, "Paragraphs")
+		.toDispatch();
+		one = Dispatch.get(paragraphs, "OutlineLevel").getInt();
+		if (one >= max) {
+			max = one;
+		}
+		headList.add(one);
+		// 保存最后一个标题
+		headings.add(Dispatch.get(headingRange, "Text").toString());
+		// 文档最后一个字的位置
+		Dispatch.call(selection, "EndKey", "6");
+		selection = Dispatch.get(word, "Selection").toDispatch();
+		int endd = Dispatch.get(selection, "End").getInt();
+		// 最后一段
+		Dispatch lastPara = Dispatch.call(wordFile, "Range",
+				new Variant(endTwo), new Variant(endd)).toDispatch();
+		// 保存最后一个段落
+		paras.add(Dispatch.get(lastPara, "Text").toString());
+		Vector<Vector<String>> documentVector = new Vector<Vector<String>>();
+		documentVector.add(headings);
+		documentVector.add(paras);
+		CloseWord();
+		return documentVector;
+	}
+	/**
+	 * 得到该目录对应标题的起始位置
+	 * @param index
+	 * @return
+	 */
+	public int getParaStart(int index) {
+		int start = 0;
+		//获得每一个链接
+		Dispatch hyperLink = Dispatch.call(hyperLinks, "Item",
+				new Variant(index)).toDispatch();
+		//光标移动到链接所指的正文地方
+		Dispatch.call(hyperLink, "Follow");
+		try {
+			//这时候获得当前光标位置
+			selection = Dispatch.get(word, "Selection").toDispatch();
+			//该位置的其起点（selection可以是一段也可以是一个点）
+			start = Dispatch.get(selection, "Start").getInt();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return start;
+	}
+	/**
+	 * 得到该目录对应标题的末尾位置
+	 * @param index
+	 * @return
+	 */
+	public int getParaEnd(int index) {
+		int end = 0;
+		Dispatch hyperLink = Dispatch.call(hyperLinks, "Item",
+				new Variant(index)).toDispatch();
+		Dispatch.call(hyperLink, "Follow");
+		try {
+			selection = Dispatch.get(word, "Selection").toDispatch();
+			end = Dispatch.get(selection, "End").getInt();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return end;
+	}
+	/**
+	 * 通过headList解析出目录结构，保存在数组中
+	 * @return
+	 */
+	public Integer[][] getStructure() {
+		Integer one, two, numone = 0;
+		int i, j, k = 0, l = 0;
+		// int hyperLinksCount = Dispatch.get(hyperLinks, "Count").getInt();
+		Integer[][] title = new Integer[headList.size()][max+1];
+		// 直接保存第一个标题
+		numone = (Integer) headList.get(0);
+		title[k][l] = numone;
+		for (i = 0; i < headList.size()-1; i++) {// i=18..j=19..l=20
+			one = (Integer) headList.get(i);
+			j = i + 1;
+			two = (Integer) headList.get(j);
+			if (one < two) {// 如果接下来是子节点
+				++k;
+				l=two-1;
+				title[k][l] = two;
+			}
+			if (one == two) {// 如果是兄弟节点
+				k++;
+				title[k][l] = two;
+			}
+			if (one > two) {// two是one父节点的兄弟节点
+				k++;
+				if(isRoot(two)){
+					l=0;
+				}else{
+					l=two-1;//outlineLevel对应列的位数,excel从0开始，outlineLevel从1开始
+				}
+				title[k][l] = two;
+			}
+		}
+		return title;
+	}
+	/**
+	 * 通过大纲等级判断是否是根节点
+	 * @param outline
+	 * @return
+	 */
+	public boolean isRoot(int outline) {
+		boolean flag = false;
+		if (outline == 1) {
+			flag = true;
+		}
+		return flag;
+	}
+	
+	public static void main(String[] args) {
+		String filePath  = "C:\\Users\\Administrator\\Desktop\\test.docx";
+		AnalysWord analysWord = new AnalysWord();
+		Vector<Vector<String>> vector = new Vector<Vector<String>>();
+		vector = analysWord.getDocumet(filePath);
+		
+		for (int i = 0; i <vector.get(1).size(); i++) {
+				//System.out.println(vector.get(1).get(i));
+				System.out.println(vector.get(1));
+		}
+	}
+}

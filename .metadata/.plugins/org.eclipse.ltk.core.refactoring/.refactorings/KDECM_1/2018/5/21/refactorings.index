@@ -1,0 +1,19 @@
+1527236167478	Rename package 'net.chenlin.dp.modules.kdecm'
+1527236339244	Rename package 'net.chenlin.dp.modules.kdecm.service.impl'
+1527237722905	Delete elements
+1527237860205	Rename package 'modules.kdecm.literature.controller'
+1527237868002	Rename package 'modules.kdecm.literature.dao'
+1527237876362	Rename package 'modules.kdecm.literature.entity'
+1527237883549	Rename package 'modules.kdecm.literature.manager'
+1527237889187	Rename package 'modules.kdecm.literature.manager.impl'
+1527237895716	Rename package 'modules.kdecm.literature.service'
+1527237902146	Rename package 'modules.kdecm.literature.service.impl'
+1527238087083	Delete elements
+1527238402211	Delete elements
+1527238498530	Rename package 'modules.kdecm.controller'
+1527238504874	Rename package 'modules.kdecm.dao'
+1527238510190	Rename package 'modules.kdecm.entity'
+1527238516302	Rename package 'modules.kdecm.manager'
+1527238526646	Rename package 'modules.kdecm.manager.impl'
+1527238531485	Rename package 'modules.kdecm.service'
+1527238537369	Rename package 'modules.kdecm.service.impl'

@@ -1,0 +1,130 @@
+package net.chenlin.dp.modules.kdecm.algorithm;
+//该函数是生成CSV文件的函数
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import net.chenlin.dp.modules.kdecm.entity.GedRelEntity;
+import net.chenlin.dp.modules.kdecm.entity.GraphEntity;
+
+public class COPRA_CreateCSV {
+	
+	//生成csv文件
+	public static String CreateDataToCSV_ForTheSecond(GraphEntity gEntity) {
+		//基本路径
+		String basePath = new File("").getAbsolutePath();
+	    basePath = basePath + "\\Algorithm_DataSet" +"\\COPRA_No.2";
+	    
+	    File f = new File("C:\\Users\\Administrator.4C74KOHCQ9ZZ7WD\\Desktop\r\n" + 
+	    		"");
+	     if(!f.exists()){
+	    	 f.mkdirs();//创建目录
+	     }  
+	     String fileName = "test.txt";//文件名及类型
+	     File file = new File(path, fileName);
+	     try {
+	    	 BufferedWriter testOutputStream = null;
+		     testOutputStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+		 	        file), "UTF-8"), 1024);
+		     testOutputStream.write(path);
+			 testOutputStream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    File csvFile = null;
+	    BufferedWriter csvFileOutputStream = null;
+	    String path = null;
+	    try {
+	      File file = new File(basePath);
+	      if (!file.exists()) {
+	        file.mkdir();
+	      }
+	      
+	      csvFile = File.createTempFile("data_COPRA", ".csv", new File(basePath));
+
+	      csvFileOutputStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+	        csvFile), "UTF-8"), 1024);
+	      
+	      List<GedRelEntity> list_gRel = new ArrayList<GedRelEntity>();
+	 
+	      list_gRel = gEntity.getGedRelEntity();
+	      
+	      for (int i = 0;i<list_gRel.size();i++) {
+	    	//从数据库中可以读出，强化关系的type为1，单向关系为2，双向关系为3
+    		  if(list_gRel.get(i).getRelationType()==2) {
+    			  csvFileOutputStream.write(String.valueOf(list_gRel.get(i).getPostilId1()));
+ 
+    			  csvFileOutputStream.write(",");
+    			  csvFileOutputStream.write(String.valueOf(list_gRel.get(i).getPostilId2()));
+
+    			  csvFileOutputStream.newLine();
+    		  }else if(list_gRel.get(i).getRelationType() == 3) {
+    			  csvFileOutputStream.write(String.valueOf(list_gRel.get(i).getPostilId1()));
+    			
+    			  csvFileOutputStream.write(",");
+    			  csvFileOutputStream.write(String.valueOf(list_gRel.get(i).getPostilId2()));
+    			
+    			  csvFileOutputStream.newLine();
+    			  csvFileOutputStream.write(String.valueOf(list_gRel.get(i).getPostilId2()));
+    			 
+    			  csvFileOutputStream.write(",");
+    			  csvFileOutputStream.write(String.valueOf(list_gRel.get(i).getPostilId1()));
+    			
+    			  csvFileOutputStream.newLine();
+    		  }
+	      }
+	      csvFileOutputStream.flush();
+	      csvFileOutputStream.close();
+	      path = basePath+"\\"+csvFile.getName();
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    }
+	    return path;
+	}
+	
+	public String CreateDataToCSV_ForTheThird(Map<String, List<String>> map) {
+		//基本路径
+		String basePath = new File("").getAbsolutePath();
+		basePath = basePath + "\\Algorithm_DataSet" +"\\COPRA_No.3";
+		File csvFile = null;
+	    BufferedWriter csvFileOutputStream = null;
+	    String path = null;
+	    try {
+	      File file = new File(basePath);
+	      if (!file.exists()) {
+	        file.mkdir();
+	      }
+
+	      csvFile = File.createTempFile("data_COPRA", ".csv", new File(basePath));
+	      csvFileOutputStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+	        csvFile), "UTF-8"), 1024);
+	      
+	      List<String> list_EdgeSource = new ArrayList<String>();
+	      List<String> list_EdgeTarget = new ArrayList<String>();
+	      list_EdgeSource = map.get("postilSource");
+	      list_EdgeTarget = map.get("postilTarget");
+	      
+	      for (int i = 0;i<list_EdgeSource.size();i++) {
+	    	  csvFileOutputStream.write(list_EdgeSource.get(i));
+			  csvFileOutputStream.write(",");
+			  csvFileOutputStream.write(list_EdgeTarget.get(i));
+			  csvFileOutputStream.newLine();
+	      }
+	    }catch (Exception e) {
+			// TODO: handle exception
+	    	e.printStackTrace();
+		} 
+	      return path;
+	}
+	
+	
+	
+}

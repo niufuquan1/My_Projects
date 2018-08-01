@@ -7,10 +7,12 @@ $(function () {
 	var div2 = document.getElementById("SearchUser");
 	var div3 = document.getElementById("SearchResult"); 
 	var div4 = document.getElementById("AddOrDel");
+	var div5 = document.getElementById("changeGroupPropery");
 	div1.style.display= 'none';
 	div2.style.display = 'none';
 	div3.style.display = 'none';
 	div4.style.display = 'none';
+	div5.style.display = 'none';
 	getGroupUserList();
 	getUserList();
 });
@@ -18,7 +20,7 @@ var userlist1;
 var groupUserList;
 window.flag = 0;
 function getGroupUserList() {
-	var groupId = localStorage.getItem("groupId");
+	var groupId = sessionStorage.getItem("groupId");
 	var t = document.getElementById("groupUser");
 	$.ajax({  
 		url:'../../kdecm/group/getGroupUserList',  
@@ -27,6 +29,7 @@ function getGroupUserList() {
         data:{groupId:groupId},
         success: function (res) {
 		     groupUserList = eval(res);
+		     console.log(groupUserList);
 		     for(var i in groupUserList)
 		    {
 		    	 var tr = document.createElement("tr");
@@ -49,8 +52,14 @@ function goback(){
 	location.replace(location.href);
 }
 
+function showGroupProperty(){
+	var div = document.getElementById("changeGroupPropery");
+	var div1 = document.getElementById("dpLTE");
+ 	div1.style.display='none';
+	div.style.display='inline';
+}
 function ChangeGroupProperty(){
-	var groupId = localStorage.getItem("groupId");
+	var groupId = sessionStorage.getItem("groupId");
 	var options=$("#IfOpenNess	 option:selected"); 
 	var options=$("#IfOpenNess	 option:selected"); 
 	$.ajax({
@@ -96,27 +105,45 @@ function addGroupMoveOn(){
 	var div = document.getElementById("AddOrDel");
 	var div1 = document.getElementById("dpLTE");
  	div1.style.display='none';
-	div.style.display='inline';
+	div.style.display='block';
+	var userList = [];
 	//继续添加组成员
 	window.flag = 1;
-	console.log(userlist1);
-		for(var i=0;i<userlist1.length;i++)
-	    {
-	    	 var flag = 0;
-	    	 for(var j = 0;j<groupUserList.length;j++){
-	    		 if(groupUserList[j].userId == userlist1[i].userId){
-	    			 flag = 1;
-	    			 break;
-	    		 }	 
-	    	 }
-	    	 if(flag == 0){
-	    		 var objSelect=document.getElementById("List");
-	    		 objSelect.classList.add("selectCity");
-		    	 objSelect.setAttribute('singleSelect','false');
-		    	 objSelect.options.add( new Option(userlist1[i].usertrname, userlist1[i].userId));
-		    	 
-	    	 }
-	    } 
+	$.ajax({  
+		url:'../../kdecm/group/GetUserList',  
+        type: 'POST',  
+        dataType: 'json',
+        success: function (res){
+        	userlist1_ = eval(res);
+        	for(var i=0;i<userlist1_.length;i++)
+    	    {
+    	    	 var flag = 0;
+    	    	 for(var j = 0;j<groupUserList.length;j++){
+    	    		 if(groupUserList[j].userId == userlist1_[i].userId){
+    	    			 flag = 1;
+    	    			 break;
+    	    		 }	 
+    	    	 }
+    	    	 if(flag == 0){
+    	    		 var obj = {
+    		    			 "userId":userlist1_[i].userId,
+    		    	 		 "userName":userlist1_[i].usertrname
+    		    	 };
+    		    	 userList.push(obj);
+    	    	 }
+    	    } 
+    	var userChooses = $('.userList').doublebox({
+            nonSelectedListLabel: '待选批注组成员',
+            selectedListLabel: '已选批注组成员',
+            moveOnSelect: false,
+            nonSelectedList:userList,
+            selectedList:null,
+            optionValue:"userId",
+            optionText:"userName",
+            doubleMove:true
+          });
+        	}
+    })
 }
 
 function delGroupMoveOn(){
@@ -124,14 +151,41 @@ function delGroupMoveOn(){
 	var div = document.getElementById("AddOrDel");
 	var div1 = document.getElementById("dpLTE");
  	div1.style.display='none';
-	div.style.display='inline';
+	div.style.display='block';
 	window.flag = 2;
-	
-	for(var i = 0;i<groupUserList.length;i++){
-		var objSelect=document.getElementById("List");
-   	 	objSelect.setAttribute('singleSelect','false');
-   	 	objSelect.options.add( new Option(groupUserList[i].username, groupUserList[i].userId));
-	}
+	var userList = [];
+	var groupId = sessionStorage.getItem("groupId");
+	var t = document.getElementById("groupUser");
+	$.ajax({  
+		url:'../../kdecm/group/getGroupUserList',  
+        type: 'POST',  
+        dataType: 'json',
+        data:{groupId:groupId},
+        success: function (res) {
+		     groupUserList = eval(res);
+		     console.log(groupUserList);
+		     for(var i = 0;i<groupUserList.length;i++){
+		 		var obj = {
+		    			 "userId":groupUserList[i].userId,
+		    	 		 "userName":groupUserList[i].usertrname
+		    	 };
+		    	 userList.push(obj);
+		 	}
+		 	var userChooses = $('.userList').doublebox({
+		         nonSelectedListLabel: '待选批注组成员',
+		         selectedListLabel: '已选批注组成员',
+		         moveOnSelect: false,
+		         nonSelectedList:userList,
+		         selectedList:null,
+		         optionValue:"userId",
+		         optionText:"userName",
+		         doubleMove:true
+		       });
+       },  
+       error: function (msg) {  
+         alert(msg);  
+       }  
+   });
 }
 
 function modifyGroupName(){
@@ -225,174 +279,81 @@ function SearchUserBtn(){
 	});
 }
 
-function selectGroupUserToRightDiv(){
-	//document.getElementById("btn_").disabled=true; //将确定按钮设置为不可用，否则会出现重复添加元素的问题
-	$("#btn_").attr("disabled", true); 
-	//将获取的信息传递给右边框
+function sendChoosesToBack(){
 	if(window.flag == 1){
-		//这里是继续添加组成员
-		var select = document.getElementById("List");
-		var flag1 = 0;
-		for(var i=0;i<select.length;i++){
-        	if(select.options[i].selected == true){  
-        		//如果用户选择了用户，则退出循环，如果用户未选择用户，则提示然后刷新界面
-        		flag1 = 1;
-        		break;
-        	}
-        }
-		if(flag1 == 0){
-			alert("您尚未选择任何用户，请选择后重试！");
-    		location.reload();
-    		return false;
-		}
+		//继续添加
+		var userIdList = [];
+		var userChooses = document.getElementsByName("doublebox");
 		
-	 	var div = document.getElementById("right");  
-	    var ul = document.getElementById("choiceUser");
-	    var li = document.createElement("li");
-	    var text = document.getElementById("remindWord");
-	    var btn1 = document.createElement("button");//向后台传送传递数据
-	    var btn2 = document.createElement("button");//取消向后台传送的数据
-	    var UserId = [];
-	    var UserName = [];
-	    text.innerHTML="您继续添加所选择的批注组员依次为:";
-	    for(i=0;i<select.length;i++){
-	        if(select.options[i].selected){
-	        	UserId.push(select[i].value);
-	        	UserName.push(select.options[i].text);
-	        }
-	    }  
-	    for(i=0;i<UserName.length;i++){
-	    	var li = document.createElement("li");
-	    	li.innerHTML = UserName[i];
-	    	ul.appendChild(li);
-	    }　 
-	    //接下来对按钮btn1相关属性进行设置
-	    btn1.innerHTML = '确定添加';
-	    btn1.className = 'btn btn-success';
-	    btn1.onclick = function () {  //该方法为向后台传入信息，并进行数据持久化操作方法 
-	    	//对数据进行封装
-	        var userIdList = [];
-	        for(var i=0;i<select.length;i++){
-	        	if(select.options[i].selected){  
-	        		obj=new Object(); 
-	        		obj.userid=select[i].value;
-		            userIdList.push(obj);
-	        	}
-	        }
-	        var groupId = localStorage.getItem("groupId");
-	    	$.ajax({
-	    		url:'../../kdecm/group/addGroupUserMoveOn',
-	    		type: 'POST',  
-	    		data:
-	    			{	groupId:groupId,
-	    				userIdList:JSON.stringify(userIdList)
-	    			},
-	    		dataType:'text',
-	    		success:function(res){
-	    			console.log(res);
-	    			if(res == 1){
-	    				alert('批注组成员添加成功!');
-	    				location.replace(location.href);
-	    			}else{
-	    				alert('批注组成员添加失败');
-	    				location.reload();
-	    			}
-	    		}
-	    	})
-	    }
-	    div.appendChild(btn1); 
-	    
-	    //接下来对按钮btn2相关属性进行设置
-	    btn2.innerHTML = '取消添加';
-	    btn2.className = 'btn btn-danger';
-	    btn2.onclick = function(){
-	    	location.reload();//自动刷新当前界面        
-	    }
-	    div.appendChild(btn2);
-	}else if(window.flag == 2){
-		//这里是删除相关组成员
-		var select = document.getElementById("List");
-		var flag1 = 0;
-		for(var i=0;i<select.length;i++){
-        	if(select.options[i].selected == true){  
-        		//如果用户选择了用户，则退出循环，如果用户未选择用户，则提示然后刷新界面
-        		flag1 = 1;
-        		break;
-        	}
-        }
-		if(flag1 == 0){
-			alert("您尚未选择任何用户，请选择后重试！");
-    		location.reload();
-    		return false;
-		}
-		//document.getElementById("btn").disabled=true; //将确定按钮设置为不可用，否则会出现重复添加元素的问题
-	 	var div = document.getElementById("right");  
-	    var ul = document.getElementById("choiceUser");
-	    var li = document.createElement("li");
-	    var text = document.getElementById("remindWord");
-	    var btn1 = document.createElement("button");//向后台传送传递数据
-	    var btn2 = document.createElement("button");//取消向后台传送的数据
-	    var UserId = [];
-	    var UserName = [];
-	    text.innerHTML="您要删除的批注组员依次为:";
-	    for(i=0;i<select.length;i++){
-	        if(select.options[i].selected){
-	        	UserId.push(select[i].value);
-	        	UserName.push(select.options[i].text);
-	        }
-	    }  
-	    for(i=0;i<UserName.length;i++){
-	    	var li = document.createElement("li");
-	    	li.innerHTML = UserName[i];
-	    	ul.appendChild(li);
-	    }　 
-	    //接下来对按钮btn1相关属性进行设置
-	    btn1.innerHTML = '确定删除';
-	    btn1.className = 'btn btn-success';
-	    btn1.onclick = function () {  //该方法为向后台传入信息，并进行数据持久化操作方法 
-	    	//对数据进行封装
-	    	if(!confirm("您确定删除上述批注组成员吗?")){
-	    		return false;
+		for(var i = 0;i<userChooses[0].length;i++){
+			if(userChooses[0].options[i].selected){  
+	    		obj=new Object(); 
+	    		obj.userid=userChooses[0].options[i].value;
+	            userIdList.push(obj);
 	    	}
-	        var userIdList = [];
-	        for(var i=0;i<select.length;i++){
-	        	if(select.options[i].selected){  
-	        		obj=new Object(); 
-	        		obj.userid=select[i].value;
-		            userIdList.push(obj);
-	        	}
-	        }
-	        var groupId = localStorage.getItem("groupId");
-	    	$.ajax({
-	    		url:'../../kdecm/group/delGroupUserMoveOn',
-	    		type: 'POST',  
-	    		data:
-	    			{	groupId:groupId,
-	    				userIdList:JSON.stringify(userIdList)
-	    			},
-	    		dataType:'text',
-	    		success:function(res){
-	    			console.log(res);
-	    			if(res == 1){
-	    				alert('批注组成员删除成功!');
-	    				location.replace(location.href);
-	    			}else{
-	    				alert('批注组成员删除失败');
-	    				location.reload();
-	    			}
-	    		}
-	    	})
-	    }
-	    div.appendChild(btn1); 
-	    
-	    //接下来对按钮btn2相关属性进行设置
-	    btn2.innerHTML = '取消删除';
-	    btn2.className = 'btn btn-danger';
-	    btn2.onclick = function(){
-	    	location.reload();//自动刷新当前界面        
-	    }
-	    div.appendChild(btn2);
+		}
+		var groupId = sessionStorage.getItem("groupId");
+		$.ajax({
+			url:'../../kdecm/group/addGroupUserMoveOn',
+			type: 'POST',  
+			data:
+				{	
+				groupId:groupId,
+				userIdList:JSON.stringify(userIdList)
+				},
+			dataType:'text',
+			success:function(res){
+				console.log(res);
+    			if(res == 1){
+    				alert('批注组成员添加成功!');
+    				location.replace(location.href);
+    			}else{
+    				alert('批注组成员添加失败');
+    				location.reload();
+    			}
+			}
+		})
+	}else if(window.flag == 2){
+		//删除组成员
+		var btn = document.getElementById("addOrDelBtn");
+		 btn.onclick = function () {  //该方法为向后台传入信息，并进行数据持久化操作方法 
+		    	//对数据进行封装
+		    	if(!confirm("您确定删除上述批注组成员吗?")){
+		    		return false;
+		    	}
+		var userIdList = [];
+		var userChooses = document.getElementsByName("doublebox");
+		
+		for(var i = 0;i<userChooses[0].length;i++){
+			if(userChooses[0].options[i].selected){  
+	    		obj=new Object(); 
+	    		obj.userid=userChooses[0].options[i].value;
+	            userIdList.push(obj);
+	    	}
+		}
+		var groupId = sessionStorage.getItem("groupId");
+		$.ajax({
+			url:'../../kdecm/group/delGroupUserMoveOn',
+			type: 'POST',  
+			data:
+				{	
+				groupId:groupId,
+				userIdList:JSON.stringify(userIdList)
+				},
+			dataType:'text',
+			success:function(res){
+				console.log(res);
+    			if(res == 1){
+    				alert('批注组成员删除成功!');
+    				location.replace(location.href);
+    			}else{
+    				alert('批注组成员删除失败');
+    				location.reload();
+    			}
+			}
+		})
 	}
+}
 }
 
 var vm = new Vue({

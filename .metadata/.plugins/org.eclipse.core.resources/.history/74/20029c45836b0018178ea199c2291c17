@@ -1,0 +1,238 @@
+package net.chenlin.dp.common.utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.POIXMLDocument;
+import org.apache.poi.POIXMLTextExtractor;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.hwpf.model.StyleDescription;
+import org.apache.poi.hwpf.model.StyleSheet;
+import org.apache.poi.hwpf.usermodel.Paragraph;
+import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFStyles;
+import org.apache.xmlbeans.XmlException;
+
+public class WordUtils {
+	public String readWord1(String path) {
+		String buffer = "";
+		try {
+			if (path.endsWith(".doc")) {
+				InputStream is = new FileInputStream(new File(path));
+				WordExtractor ex = new WordExtractor(is);
+				buffer = ex.getText();
+				ex.close();
+			} else if (path.endsWith("docx")) {
+				OPCPackage opcPackage = POIXMLDocument.openPackage(path);
+				POIXMLTextExtractor extractor = new XWPFWordExtractor(opcPackage);
+				buffer = extractor.getText();
+				extractor.close();
+			} else {
+				System.out.println("此文件不是word文件！");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return buffer;
+	}
+
+	public void ReadWord2() {
+		String path = "C:\\Users\\Administrator\\Desktop\\test.docx";
+
+		InputStream is = null;
+		try {
+			is = new FileInputStream(path);
+		} catch (FileNotFoundException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+
+		XWPFDocument doc = null;
+		try {
+			doc = new XWPFDocument(is);
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		// 获取段落
+		List<XWPFParagraph> paras = doc.getParagraphs();
+		// 获取doc样式
+		XWPFStyles styles = doc.getStyles();
+
+		int j = 0;
+		for (XWPFParagraph para : paras) {
+
+			ArrayList<String> al = new ArrayList<String>();
+
+			try {
+				al.add(styles.getStyle(para.getStyle()).getCTStyle().getName().getVal());
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			al.add(para.getParagraphText());
+			System.out.println(j++ + ":" + al);
+
+		}
+
+		for (int i = 16; i > 11; i--) {
+			doc.removeBodyElement(i);
+		}
+
+		// paras.get(3).setStyle(paras.get(1).getStyle());
+		// styles.getStyle(paras.get(1).getStyle()).getCTStyle().getPPr().unsetNumPr();
+
+		XWPFRun run = paras.get(0).insertNewRun(0);
+		run.setText("10086");
+
+		OutputStream out = null;
+		try {
+			out = new FileOutputStream("C:\\Users\\Administrator\\Desktop\\a1.docx");
+
+		} catch (FileNotFoundException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		try {
+			doc.write(out);
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+
+		System.out.println("over");
+	}
+
+	public static void ReadWord3() throws IOException {
+			String path = "C:\\Users\\Administrator\\Desktop\\test1.doc";
+			File file = new File(path);
+			String filename = file.getName();
+			filename = filename.substring(0, filename.lastIndexOf("."));
+			InputStream is = new FileInputStream(path);
+			HWPFDocument doc = new HWPFDocument(is); 
+			Range r = doc.getRange();
+			List<String> list = new ArrayList<String>();
+			for (int i = 0; i < r.numParagraphs(); i++) {
+				Paragraph p = r.getParagraph(i);
+				// check if style index is greater than total number of styles
+
+				int numStyles =doc.getStyleSheet().numStyles();
+
+				int styleIndex = p.getStyleIndex();
+
+				if (numStyles > styleIndex) {
+					System.out.println("123");
+					StyleSheet style_sheet = doc.getStyleSheet();
+
+					StyleDescription style = style_sheet.getStyleDescription(styleIndex);
+
+					String styleName = style.getName();
+					System.out.println(styleName);
+					if (styleName!=null&&styleName.contains("标题")) {
+						System.out.println("456");
+						// write style name and associated text
+						// System.out.println(styleName +"->"+ p.text());
+						System.out.println(p.text());
+						String text = p.text();
+						list.add(text);
+			}
+		}
+	}
+}
+
+	/*
+	 * 
+	 * //TODO 图表跟图片不一样，需另外处理
+	 * 
+	 * 
+	 * //得到word数据流 byte [] dataStream = doc.getDataStream(); //用于在一段范围内获得段落数 int
+	 * numCharacterRuns = r.numCharacterRuns(); //
+	 * System.out.println("CharacterRuns 数:"+numCharacterRuns); //负责图像提取 和
+	 * 确定一些文件某块是否包含嵌入的图像。 PicturesTable table = new PicturesTable(doc, dataStream,
+	 * null, null, null);
+	 * 
+	 * //文章图片编号 int i = 1; for(int j=0 ; j<numCharacterRuns ; j++){
+	 * //这个类表示一个文本运行，有着共同的属性。 CharacterRun run = r.getCharacterRun(j); //是否存在图片
+	 * boolean bool = table.hasPicture(run); if(bool){ //返回图片对象绑定到指定的CharacterRun
+	 * Picture pic = table.extractPicture(run, true); //图片的内容字节写入到指定的输出流。
+	 * pic.writeImageContent(new
+	 * FileOutputStream("E:\temp\"+filename+"_"+i+".jpg")); i++; } } return list;
+	 * 
+	 * }
+	 * 
+	 * 
+	 */
+	public static void ReadWord4(String path) throws IOException, XmlException, OpenXML4JException {
+		InputStream is = new FileInputStream(path);
+		// 2007
+		//
+		OPCPackage p = POIXMLDocument.openPackage(path);
+		//
+
+		XWPFWordExtractor e = new XWPFWordExtractor(p);
+		//
+
+		POIXMLDocument doc = e.getDocument();
+
+		List<String> list = new ArrayList<String>();
+
+		XWPFDocument doc1 = new XWPFDocument(is);
+
+		List<XWPFParagraph> paras = doc1.getParagraphs();
+
+		for (XWPFParagraph graph : paras) {
+
+			String text = graph.getParagraphText();
+
+			String style = graph.getStyle();
+
+			if ("1".equals(style)) {
+				//
+
+				System.out.println(text + "--[" + style + "]");
+
+			} else if ("2".equals(style)) {
+				//
+
+				System.out.println(text + "--[" + style + "]");
+
+			} else if ("3".equals(style)) {
+				//
+
+				System.out.println(text + "--[" + style + "]");
+
+			} else {
+
+				continue;
+
+			}
+
+			list.add(text);
+
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		WordUtils wu = new WordUtils();
+		String content = wu.readWord1("C:\\Users\\Administrator\\Desktop\\test.docx");
+		System.out.println(content);
+		wu.ReadWord3();
+
+	}
+}

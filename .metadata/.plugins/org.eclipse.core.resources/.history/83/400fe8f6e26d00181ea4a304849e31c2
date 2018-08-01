@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/header_css::header('')"></head>
+<body>
+	<div id="dpLTE" class="container-fluid" v-cloak>
+        		<div id="EditGroup">
+        			请选择组内批注是否公开:<select id="ifOpenNess">
+        								
+        								</select>
+        			<input type="button" value="确定" id="btn" onclick="ChangeGroupOpenNess()" />
+        		<input type="button" value="点击这里更改组名" id="btn" onclick="ChangeGroupOpenNess()" />
+        		</div>
+        			
+        			 		
+	</div>
+	
+	<div th:include="include/footer_js::footer"></div>
+	<script th:src="@{/js/common.js}"></script>
+	<script th:src="@{/js/kdecm/group/edit.js}"></script>
+</body>
+</html>

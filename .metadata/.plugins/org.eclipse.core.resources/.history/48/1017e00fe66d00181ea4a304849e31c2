@@ -1,0 +1,87 @@
+/**
+ * 编辑-js
+ */
+$(function () {
+	findGroupIdList();
+});
+
+function findGroupId(){
+	$.ajax({  
+		url:'../../kdecm/group/GetUserList',  
+        type: 'POST',  
+        dataType: 'json',
+        success: function (res) {
+            console.log(res);
+		     var userlist = eval(res);
+		     for(var i in userlist)
+		    {
+		    	 var objSelect=document.getElementById("userlist");
+		    	 objSelect.setAttribute('singleSelect','false');
+		    	 objSelect.options.add( new Option(userlist[i].username, userlist[i].userId));
+		    }
+        },  
+        error: function (msg) {  
+          alert(msg);  
+        }  
+    });
+}
+
+function ChangeGroupProperty(){
+	var openNessSelect = document.getElementById("ifOpenNess");
+	var	openNessProperty;
+	for(i=0;i<2;i++){
+        if(openNessSelect.options[i].selected){
+        	openNessProperty = openNessSelect.options[i];
+        }
+    }  
+	$.ajax({
+		url:'../../kdecm/group/ChangeGroupProperty',
+		type: 'POST',  
+        dataType: 'json',
+        data:{openNess:openNessProperty},
+        dataType:'text',
+        success:function(res){
+        	console.log(res);
+        	if(res==1){
+        		alert("批注组批注权限修改成功!");
+        		location.replace(location.href);
+        	}else{
+        		alert("批注组批注权限修改失败，请联系管理员进行系统修复!");
+        		location.reload();
+        	}
+        }
+	})
+}
+
+
+var vm = new Vue({
+	el:'#dpLTE',
+	data: {
+		proGroup: {
+			groupId: 0
+		}
+	},
+	methods : {
+		setForm: function() {
+			$.SetForm({
+				url: '../../kdecm/group/info?_' + $.now(),
+		    	param: vm.proGroup.groupId,
+		    	success: function(data) {
+		    		vm.proGroup = data;
+		    	}
+			});
+		},
+		acceptClick: function() {
+			if (!$('#form').Validform()) {
+		        return false;
+		    }
+		    $.ConfirmForm({
+		    	url: '../../kdecm/group/update?_' + $.now(),
+		    	param: vm.proGroup,
+		    	success: function(data) {
+		    		$.currentIframe().vm.load();
+		    	}
+		    });
+		}
+	}
+})

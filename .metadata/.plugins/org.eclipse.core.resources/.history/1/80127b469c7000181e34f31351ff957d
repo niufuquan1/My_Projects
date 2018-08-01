@@ -1,0 +1,115 @@
+package net.chenlin.dp.modules.kdecm.service.impl;
+
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import net.chenlin.dp.common.entity.Page;
+import net.chenlin.dp.common.entity.Query;
+import net.chenlin.dp.common.entity.R;
+import net.chenlin.dp.common.utils.AnalysWord;
+import net.chenlin.dp.common.utils.CommonUtils;
+import net.chenlin.dp.modules.kdecm.entity.LiteratureEntity;
+import net.chenlin.dp.modules.kdecm.manager.LiteratureManager;
+import net.chenlin.dp.modules.kdecm.service.LiteratureService;
+
+/**
+ * 
+ *
+ * @author ZhouChenglin
+ * @email yczclcn@163.com
+ * @url www.chenlintech.com
+ * @date 2018年5月27日 下午8:11:20
+ */
+@Service("literatureService")
+public class LiteratureServiceImpl implements LiteratureService {
+
+	@Autowired
+	private LiteratureManager literatureManager;
+
+	@Override
+	public Page<LiteratureEntity> listLiterature(Map<String, Object> params) {
+		Query query = new Query(params);
+		Page<LiteratureEntity> page = new Page<>(query);
+		literatureManager.listLiterature(page, query);
+		return page;
+	}
+	
+	@Override
+	public Page<LiteratureEntity> literatureShow(Map<String, Object> params) {
+		Query query = new Query(params);
+		Page<LiteratureEntity> page = new Page<>(query);
+		literatureManager.literatureShow(page, query);
+		return page;
+	}
+
+	@Override
+	public Integer saveLiterature(LiteratureEntity role) {
+		int count = literatureManager.saveLiterature(role);
+		return count;
+	}
+
+	@Override
+	public R getLiteratureById(Long id) {
+		LiteratureEntity literature = literatureManager.getLiteratureById(id);
+		return CommonUtils.msg(literature);
+	}
+
+	@Override
+	public R updateLiterature(LiteratureEntity literature) {
+		int count = literatureManager.updateLiterature(literature);
+		return CommonUtils.msg(count);
+	}
+
+	@Override
+	public R batchRemove(Long[] id) {
+		int count = literatureManager.batchRemove(id);
+		return CommonUtils.msg(id, count);
+	}
+	
+	public Integer MaxLiteratureID() {
+		Integer maxLiteratureId = literatureManager.MaxLiteratureID();
+		if(maxLiteratureId!=null) {
+			return maxLiteratureId;
+		}
+		return 0;
+	}
+	
+	public String FindLiteraturePath(int litertureId) {
+		String LiteraturePath = literatureManager.FindLiteraturePath(litertureId);
+		if(LiteraturePath!=null) {
+			return LiteraturePath;
+		}
+		return "Error";
+	}
+	//该函数为分析文献的函数
+	public Integer AnalysisWord(String content[],int literatureId) {
+		int flag1 = 0;//0代表没读出目录的字，也没读出第一次绪论的字，1代表读出了目录的字，
+					  //2代表读出绪论/前言的字但肯定是目录内容，
+					  //3代表读出了绪论/前言两次，说明读到了正文开始的内容！
+		
+		for(int i = 0;i<content.length;i++) {
+			String buffer = StringUtils.deleteWhitespace(content[i]);//去除字符串中所有空格
+			//首先判断是否读到了目录
+			if(flag1 == 0) {
+				if(buffer.contentEquals("目录")) {
+					flag1 = 1;
+					continue;
+				}
+			}else if(flag1 == 1) {
+				if(buffer.contentEquals("绪论")||buffer.contentEquals("前言")) {
+					flag1 = 2;
+					continue;
+				}
+			}else if(flag1 == 2) {
+				if(buffer.contentEquals("绪论")||buffer.contentEquals("前言")) {
+					//这里判定为已经开始读取正文部分
+					if()
+				}
+			}
+		}
+		return 1;
+	}
+}
