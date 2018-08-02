@@ -104,30 +104,6 @@ public class ProGroupController extends AbstractController {
 		return r;
 	}
 	
-	/*@RequestMapping(value="/GetData",method=RequestMethod.POST)
-	@ResponseBody
-    public String getDatas() {
-        return "data";
-    }*/
-	 /*
-	@RequestMapping(value = "/GetUserList", method = RequestMethod.POST, produces = "application/json")  
-    public @ResponseBody Map ListSysUser(Model model, ServletRequest request,HttpServletRequest req) {  
-       
-        Map<String , Object> map = new LinkedHashMap<String, Object>();  
- 
-        map.put("createdUser","jiabaochina");  
-        map.put("score", 5);  
-        map.put("status", "success");
-        System.out.println(map);
-        
-        String id = request.getParameter("id");
-        String name = request.getParameter("name");
-        String sex= request.getParameter("sex");
-        System.out.println(id+" "+name+" "+sex);
-        return map;  
-        
-    }  */
-	
 	@RequestMapping(value = "/GetUserList", method = RequestMethod.POST, produces = "application/json")  
     public @ResponseBody List<SysUserEntity> ListSysUser(Model model, ServletRequest request,HttpServletRequest req) {  
         List<SysUserEntity> list = new ArrayList<>();
@@ -141,20 +117,12 @@ public class ProGroupController extends AbstractController {
 		int flag = -1;
 		int groupid = proGroupService.MaxGroupID();//从数据库中查找到组号;
 		groupid++;//自增一位后得到本组组号
-		//System.out.println(groupid+"----------------");
 		String groupName = request.getParameter("groupName");//获得前台的以json格式封装的字符串
 		System.out.println(groupName);
 		String createUserId = request.getParameter("createUserId");
 		System.out.println(createUserId);
 		String userIdList = request.getParameter("userIdList");
 		System.out.println(userIdList);
-		/*try {
-			JSONObject userIdListJson = new JSONObject(userIdList);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		//进行用户ID解析,例如["1","2","3"]
 		ArrayList<String> arrayuserIdList = new ArrayList<String>();  
 		JSONArray jsonArray = JSONArray.fromObject(userIdList);
 		for (int i = 0; i < jsonArray.size(); i++) {  

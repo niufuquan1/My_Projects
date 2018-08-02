@@ -57,6 +57,8 @@ public class LiteratureController extends AbstractController {
 	private String LiteratureAuthor = null;
 	private String LiteratureReference = null;
 	private static Integer LiteratureID = null;
+	private static String IfOpenNess = null;
+	private static Integer groupId = null;
 	/**
 	 * 列表
 	 * @param params
@@ -232,6 +234,8 @@ public class LiteratureController extends AbstractController {
 		literatureEntity.setLiteratureAge(Integer.parseInt(LiteratureAge));
 		literatureEntity.setLiteratureAuthor(LiteratureAuthor);
 		literatureEntity.setLiteratureReference(LiteratureReference);
+		literatureEntity.setGroupId(groupId);
+		literatureEntity.setLiteratureIfOpenNess(IfOpenNess);
 		String [] listarray = LiteratureKeyword.split("、");
 	
 		Map<String, Object> params1 = new HashMap<String, Object>();
@@ -263,6 +267,8 @@ public class LiteratureController extends AbstractController {
 		LiteratureKeyword = request.getParameter("keyword");
 		LiteratureAuthor = request.getParameter("author");
 		LiteratureReference = request.getParameter("reference");
+		IfOpenNess = request.getParameter("IfOpenNess");
+		groupId = Integer.parseInt(request.getParameter("groupId"));
         return 1;
         }
 	//本来该类应该放在文献对象控制类中，但是由于该类可以获取到文献id和文献名称，故放在该类可以接受

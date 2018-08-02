@@ -10,6 +10,7 @@ function getFileType(filePath){
 　　　　else return ""; 
 　　　　}
 function sendOtherMsg(){
+	var groupId = localStorage.getItem("currentGroupId");
 	$.ajax({
 		type: 'post',  
         url: "../../kdecm/literature/sendOtherMsg",
@@ -20,7 +21,9 @@ function sendOtherMsg(){
         		age:$("#literatureAge").val(),
         		keyword:$("#literatureKeyword").val(),
         		author:$("#literatureAuthor").val(),
-        		reference:$("#literatureReference").val()
+        		reference:$("#literatureReference").val(),
+        		IfOpenNess:$("#IfOpenNess  option:selected").val(),
+        		groupId:$("groupId").val()
         	},
         dataType:'text',
         success:function(res){

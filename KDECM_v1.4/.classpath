@@ -56,5 +56,11 @@
 	<classpathentry kind="lib" path="lib/commons-lang-2.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/jacob.jar"/>
+	<classpathentry kind="lib" path="lib/poi-scratchpad-3.9-20121203.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.9-20121203.jar"/>
+	<classpathentry kind="lib" path="lib/poi-examples-3.9-20121203.jar"/>
+	<classpathentry kind="lib" path="lib/poi-excelant-3.9-20121203.jar"/>
+	<classpathentry kind="lib" path="lib/poi-ooxml-3.9-20121203.jar"/>
+	<classpathentry kind="lib" path="lib/poi-ooxml-schemas-3.9-20121203.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

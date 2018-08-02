@@ -20,18 +20,34 @@ function initialPage() {
 }
 
 function getGrid() {
+	var groupId = localStorage.getItem("currentGroupId");
 	$('#dataGrid').bootstrapTableEx({
 		url: '../../kdecm/literature/list?_' + $.now(),
 		height: $(window).height()-56,
 		queryParams: function(params){
 			params.name = vm.keyword;
+			params.userId = top.vm.user.userId;
+			params.groupId = groupId;
 			return params;
 		},
 		columns: [
 			{checkbox: true},
 			{field : "literatureName", title : "文献名称", width : "100px"}, 
-			{field : "literatureTime", title : "文献上传时间", width : "100px"}
-		]
+			{field : "literatureTime", title : "文献上传时间", width : "100px"},
+			{field : "literatureIfOpenNess", title : "文献是否公开", width : "100px"}
+		],
+		onLoadSuccess:function(data){
+			var i;
+			console.log(data.rows);
+			for(i=0;i<data.rows.length;i++){
+				if(data.rows[i].literatureIfOpenNess == "0"){
+					data.rows[i].literatureIfOpenNess = "对本组内公开,对外不公开";
+            	}else if(data.rows[i].literatureIfOpenNess == "1"){
+            		data.rows[i].literatureIfOpenNess = "对外公开";
+            	}
+			}
+			$("#dataGrid").bootstrapTable("load",data);
+		}
 	})
 }
 
@@ -54,8 +70,8 @@ var vm = new Vue({
 			dialogOpen_({
 				title: '新增',
 				url: 'kdecm/literature/add1.html?_' + $.now(),
-				width: '350px',
-				height: '300px',
+				width: '500px',
+				height: '600px',
 				yes : function(iframeId) {
 					top.frames[iframeId].vm.acceptClick();
 				},

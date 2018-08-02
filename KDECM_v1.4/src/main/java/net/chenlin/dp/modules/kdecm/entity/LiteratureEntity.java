@@ -50,7 +50,32 @@ public class LiteratureEntity implements Serializable {
 	
 	private String literatureKeyword;
 	
+	private String literatureIfOpenNess;
 	
+	private int groupId;
+	
+	
+	
+	
+	
+
+	
+
+	public String getLiteratureIfOpenNess() {
+		return literatureIfOpenNess;
+	}
+
+	public void setLiteratureIfOpenNess(String literatureIfOpenNess) {
+		this.literatureIfOpenNess = literatureIfOpenNess;
+	}
+
+	public int getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(int groupId) {
+		this.groupId = groupId;
+	}
 
 	public String getLiteratureAuthor() {
 		return literatureAuthor;

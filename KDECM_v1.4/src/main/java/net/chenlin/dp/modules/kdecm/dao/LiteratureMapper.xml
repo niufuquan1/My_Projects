@@ -5,18 +5,13 @@
 	
 	<select id="listForPage" resultType="net.chenlin.dp.modules.kdecm.entity.LiteratureEntity">
 		SELECT
-			`LITERATURE_ID`, 
 			`LITERATURE_NAME`, 
-			`LITERATURE_PATH`, 
-			`USER_ID`, 
-			`LITERATURE_TIME`
+			`LITERATURE_TIME`,
+			`LITERATURE_IFOPENNESS`
 		FROM
 			literature
-		<where>
-			<if test="literatureName != null and literatureName.trim() != ''">
-				LITERATURE_NAME LIKE concat('%',#{literatureName},'%')
-			</if>
-		</where>
+		WHERE
+			GROUP_ID = #{groupId} OR LITERATURE_IFOPENNESS = 1 
 		ORDER BY
 			LITERATURE_ID DESC
 	</select>
@@ -118,7 +113,9 @@
 			`USER_ID`, 
 			`LITERATURE_TIME`,
 			`LITERATURE_AGE`,
-			`LITERATURE_REFERENCE`
+			`LITERATURE_REFERENCE`,
+			`LITERATURE_IFOPENNESS`,
+			`GROUP_ID`
 		)
 		VALUES (
 			#{literatureId}, 
@@ -127,7 +124,9 @@
 			#{userId}, 
 			#{literatureTime},
 			#{literatureAge},
-			#{literatureReference}
+			#{literatureReference},
+			#{IfOpenNess},
+			#{groupId}
 		);
 		INSERT INTO literature_author(
 			`LITERATURE_ID`,
